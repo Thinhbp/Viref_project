@@ -4,7 +4,7 @@ pragma solidity ^0.8.10;
 import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 
 // Exchange 1:1 VUSD:USDC
-contract vusd is  ERC20 {
+contract VUSD is ERC20 {
     constructor () ERC20("ViNet USD", "VUSD") {
     }
 
@@ -17,7 +17,7 @@ contract vusd is  ERC20 {
     address withdrawAddress = msg.sender;
     uint moneyWithdrawed = 0;
 
-    address addressVNC = address(0);
+    address vanAddress = address(0);
     address USDC = 0x38558FB189f9fB0a6B455064477627Fdbe3d0f1c;
 
     event buy(address _address, uint _amount);
@@ -45,11 +45,11 @@ contract vusd is  ERC20 {
 
     function withdraw() public {
         require(msg.sender == withdrawAddress, "permission denied");
-        require(addressVNC != address(0), "invalid addressVNC");
-        uint moneyCanWithdraw = vnc(addressVNC).moneyCanWithdraw();
+        require(vanAddress != address(0), "invalid vanAddress");
+        uint moneyCanWithdraw = VAN(vanAddress).moneyCanWithdraw();
         require(moneyCanWithdraw > moneyWithdrawed, "no money can withdraw");
-        IERC20(USDC).transfer(msg.sender, (moneyCanWithdraw - moneyWithdrawed));
-        moneyWithdrawed += (moneyCanWithdraw - moneyWithdrawed);
+        IERC20(USDC).transfer(msg.sender, moneyCanWithdraw - moneyWithdrawed);
+        moneyWithdrawed += moneyCanWithdraw - moneyWithdrawed;
     }
     
     function changeWithdrawAddress(address _address) public {
@@ -71,13 +71,13 @@ contract vusd is  ERC20 {
         emit changeowner(_address);
     }
 
-    function updateVNCAddress(address _address) public {
+    function updateVANAddress(address _address) public {
         require(msg.sender == owner, "permission denied");
         require(_address != address(0), "invalid address");
-        addressVNC = _address;
+        vanAddress = _address;
     }
 } 
 
-abstract contract vnc {
+abstract contract VAN {
     function moneyCanWithdraw() public virtual returns(uint);
 }
