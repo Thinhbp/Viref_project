@@ -45,26 +45,30 @@ contract vnc is  ERC20 {
         uint buyNowToken;
 
         amount = amount * 10**12; // VUSD uses 6 decimal places of precision, convert to 18
-        uint moneyLeft = amount;
         uint tokenMint = 0;
         uint tokenTranferForUser = 0;
         uint currentMoney = _moneyInPool;
+        uint moneyLeft = amount;
 
         while (moneyLeft  >  0) {
             if (state == statusEnum.ICO) {
                 nextBreak = (tokenBeforeICO[currentStep] + 5 * 10**5 * 10 **18) - _tokenInPool;
-                assumingToken = moneyLeft * 100 / icoPrice[currentStep] ;
+                assumingToken = moneyLeft * 100/icoPrice[currentStep] ;
             } else {
-                nextBreak = state == statusEnum.subIDO ? subIDOSold : (_tokenInPool - tokenBeforeICO[currentStep + 1]) ;
+                if (currentStep==28 && state==statusEnum.IDO) { // nomore ICO
+                    nextBreak = 2**256 - 1; // MAX_INT
+                } else {
+                    nextBreak = state == statusEnum.subIDO ? subIDOSold : (_tokenInPool - tokenBeforeICO[currentStep + 1]) ;
+                }
                 assumingToken = _tokenInPool - (_tokenInPool * _moneyInPool / (_moneyInPool + moneyLeft));
             }
 
-            buyNowToken = nextBreak >= assumingToken ? assumingToken : nextBreak;
+            buyNowToken = nextBreak<assumingToken ? nextBreak : assumingToken;
             buyNowCost = moneyLeft; 
 
             if (assumingToken>nextBreak) {
                 buyNowCost = state == statusEnum.ICO ? 
-                                    buyNowToken*icoPrice[currentStep]/100 : 
+                                    buyNowToken * icoPrice[currentStep]/100 : 
                                     ((_tokenInPool * _moneyInPool)/(_tokenInPool - buyNowToken) - _moneyInPool);
             }
             _moneyInPool += buyNowCost;
@@ -87,7 +91,7 @@ contract vnc is  ERC20 {
                     state = statusEnum.ICO;
                     subIDOSold = 0;
                 }
-            } 
+            }
             moneyLeft = moneyLeft - buyNowCost;
         }
         require(tokenTranferForUser+tokenMint > 0, "something wrong with tokenBought");
@@ -96,7 +100,7 @@ contract vnc is  ERC20 {
         if (tokenMint > 0)  {
             _mint(address(this), tokenMint*2);
         }
-        _transfer(address(this), msg.sender, tokenTranferForUser + tokenMint);
+        _transfer(address(this), msg.sender, tokenMint + tokenTranferForUser);
 
         require(_moneyInPool<=checkVUSD(), "something wrong with _moneyInPool");
         require(_tokenInPool<=balanceOf(address(this)), "something wrong with _tokenInPool");
