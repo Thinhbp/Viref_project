@@ -2,7 +2,7 @@
 pragma solidity ^0.8.10;
 import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 
-contract vnc is  ERC20 {
+contract VAN is ERC20 {
     constructor() ERC20("Virtual Affiliate Network", "VAN") {
     }
 
@@ -34,7 +34,7 @@ contract vnc is  ERC20 {
     }
 
     function buyToken(uint amount) public {
-        require(status, "Contract is maintaining") ;
+        require(status, "Contract is maintaining");
         require(amount > 0, "Please input amount greater than 0");
         require(IERC20(VUSD).allowance(msg.sender, address(this)) == amount,"You must approve in web3");
         require(IERC20(VUSD).transferFrom(msg.sender, address(this), amount), "Transfer failed");
@@ -53,18 +53,18 @@ contract vnc is  ERC20 {
         while (moneyLeft  >  0) {
             if (state == statusEnum.ICO) {
                 nextBreak = (tokenBeforeICO[currentStep] + 5 * 10**5 * 10 **18) - _tokenInPool;
-                assumingToken = moneyLeft * 100/icoPrice[currentStep] ;
+                assumingToken = moneyLeft * 100/icoPrice[currentStep];
             } else {
                 if (currentStep==28 && state==statusEnum.IDO) { // nomore ICO
                     nextBreak = 2**256 - 1; // MAX_INT
                 } else {
-                    nextBreak = state == statusEnum.subIDO ? subIDOSold : (_tokenInPool - tokenBeforeICO[currentStep + 1]) ;
+                    nextBreak = state == statusEnum.subIDO ? subIDOSold : (_tokenInPool - tokenBeforeICO[currentStep + 1]);
                 }
                 assumingToken = _tokenInPool - (_tokenInPool * _moneyInPool / (_moneyInPool + moneyLeft));
             }
 
             buyNowToken = nextBreak<assumingToken ? nextBreak : assumingToken;
-            buyNowCost = moneyLeft; 
+            buyNowCost = moneyLeft;
 
             if (assumingToken>nextBreak) {
                 buyNowCost = state == statusEnum.ICO ? 
@@ -108,7 +108,7 @@ contract vnc is  ERC20 {
     }
 
     function sellToken(uint amount) public {
-        require(status, "Contract is maintaining") ;
+        require(status, "Contract is maintaining");
         require(amount > 0, "invalid amount");
         require(approve(address(this), amount), "approve failed" );
         require(transferFrom(msg.sender, address(this), amount), "transfer failed");
@@ -117,7 +117,7 @@ contract vnc is  ERC20 {
         uint receivedMoney = currentMoney - moneyInpool;
         IERC20(VUSD).transfer(msg.sender, receivedMoney/10**12);
         _moneyInPool -= receivedMoney;
-        _tokenInPool += amount ; 
+        _tokenInPool += amount; 
         if (state == statusEnum.ICO) {
             state = statusEnum.subIDO;
         } 
