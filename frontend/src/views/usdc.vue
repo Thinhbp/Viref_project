@@ -13,7 +13,7 @@
 				<tr v-for="acc in balances">
 					<td>{{ acc.address }}</td>
 					<td>{{ formatMoney(formatUSDC(acc.balance)) }}</td>
-					<td><button :disabled="loading" @click="mintToken(acc.address)">mintToken</button></td>
+					<td><button :disabled="loading" @click="mintToken(acc.address)" v-if="acc.mine">mintToken</button></td>
 				</tr>
 			</tbody>
 		</table>
@@ -22,7 +22,7 @@
 <script type="text/javascript">
 const usdc = require("../contract/usdc.json");
 export default {
-	props: ['accounts'],
+	props: ['accounts', 'extra'],
 	data() {
 		return {
 			USDC: null,
@@ -58,9 +58,10 @@ export default {
 	},
 	mounted() {
 		this.USDC = new web3.eth.Contract(usdc.abi, usdc.address);
-		this.balances = this.accounts.map(acc => ({
+		this.balances = [...this.accounts, ...this.extra].map(acc => ({
 			address: acc,
-			balance: 0
+			balance: 0,
+			mine: this.accounts.indexOf(acc)>=0
 		}));
 		this.getBalances()
 	}

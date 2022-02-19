@@ -3,9 +3,9 @@
     <button @click="connectWallet">Connect Wallet</button>
     <div v-if="accounts.length" class="desk">
       <div class="leftCol">
-        <usdc :accounts="usdcAccounts" />
-        <vusd :accounts="vusdAccounts" />
-        <van :accounts="vanAccounts" />
+        <usdc :accounts="accounts" :extra="[vusdMetadata.address]" />
+        <vusd :accounts="accounts" :extra="[vanMetadata.address]" />
+        <van :accounts="accounts" />
       </div>
       <div class="rightCol">
         <chart />
@@ -34,18 +34,9 @@ export default {
   data() {
     return {
       accounts: [],
-      loading: true
-    }
-  },
-  computed: {
-    usdcAccounts() {
-      return [...this.accounts, vusdMetadata.address];
-    },
-    vusdAccounts() {
-      return [...this.accounts, vanMetadata.address];
-    },
-    vanAccounts() {
-      return this.accounts;
+      loading: true,
+      vusdMetadata,
+      vanMetadata
     }
   },
   methods: {
