@@ -36,7 +36,6 @@ contract VAN is ERC20 {
     function buyToken(uint amount) public {
         require(status, "Contract is maintaining");
         require(amount > 0, "Please input amount greater than 0");
-        require(IERC20(VUSD).allowance(msg.sender, address(this)) == amount,"You must approve in web3");
         require(IERC20(VUSD).transferFrom(msg.sender, address(this), amount), "Transfer failed");
 
         uint nextBreak;
@@ -110,8 +109,7 @@ contract VAN is ERC20 {
     function sellToken(uint amount) public {
         require(status, "Contract is maintaining");
         require(amount > 0, "invalid amount");
-        require(approve(address(this), amount), "approve failed" );
-        require(transferFrom(msg.sender, address(this), amount), "transfer failed");
+        transfer(address(this), amount);
         uint currentMoney = _moneyInPool;
         uint moneyInpool = (_tokenInPool * _moneyInPool) / (_tokenInPool + amount);
         uint receivedMoney = currentMoney - moneyInpool;
