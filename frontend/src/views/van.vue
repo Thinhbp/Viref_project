@@ -4,15 +4,15 @@
 		<table border="1" cellpadding="10">
 			<thead>
 				<tr>
-					<td>Address</td>
-					<td>Balance</td>
+					<td style="text-align: left;">Address</td>
+					<td style="text-align: right;">Balance</td>
 					<td>Action</td>
 				</tr>
 			</thead>
 			<tbody>
 				<tr v-for="acc in balances">
-					<td>{{ acc.address }}</td>
-					<td>{{ formatMoney(formatVAN(acc.balance)) }}</td>
+					<td style="text-align: left; font-size: 15px">{{ acc.address }}</td>
+					<td style="text-align: right;">{{ formatMoney(formatVAN(acc.balance)) }}</td>
 					<td><button v-if="acc.mine" :disabled="loading" @click="buyToken(acc.address)">Buy</button> <button v-if="acc.mine" :disabled="loading" @click="sellToken(acc.address)">Sell</button></td>
 				</tr>
 			</tbody>
