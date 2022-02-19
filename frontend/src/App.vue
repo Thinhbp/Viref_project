@@ -1,7 +1,7 @@
 <template>
   <div id="app">
     <button @click="connectWallet">Connect Wallet</button>
-    <div v-if="status && accounts.length" class="desk">
+    <div v-if="accounts.length" class="desk">
       <div class="leftCol">
         <usdc :accounts="usdcAccounts" />
         <vusd :accounts="vusdAccounts" />
@@ -34,8 +34,7 @@ export default {
   data() {
     return {
       accounts: [],
-      loading: true,
-      status: false
+      loading: true
     }
   },
   computed: {
@@ -66,16 +65,12 @@ export default {
     }
   },
   mounted() {
-    web3.eth.net.isListening().then(status => {
-      this.status = status;
-      if ( status ) {
-        this.getAccounts().then(accounts => {
-          this.accounts = accounts;
-        })
-      }
-    }).finally(e => {
+    this.getAccounts().then(accounts => {
+      if ( accounts.length )
+        return this.connectWallet();
+    }).catch(e => console.log(e)).finally(e => {
       this.loading = false;
-    });
+    })
   }
 }
 </script>
