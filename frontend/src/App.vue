@@ -56,7 +56,9 @@ export default {
     }
   },
   mounted() {
+    console.log("mounted");
     this.getAccounts().then(accounts => {
+    console.log("accounts", accounts);
       if ( accounts.length )
         return this.connectWallet();
     }).catch(e => console.log(e)).finally(e => {

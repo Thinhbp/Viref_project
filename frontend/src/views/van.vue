@@ -92,9 +92,23 @@ export default {
 	    	web3.eth.getPastLogs({fromBlock:'0x0',address:van.address})
 			.then(res => {
 			  res.forEach(rec => {
+			  	const test = web3.eth.abi.decodeParameter('bytes32', rec.topics[0]);
+			  	const from = rec.topics[1] ? web3.eth.abi.decodeParameter('address', rec.topics[1]) : '';
+				const to = rec.topics[2] ? web3.eth.abi.decodeParameter('address', rec.topics[2]) : '';
+				const value = web3.eth.abi.decodeParameter('uint256', rec.data);
+				const amount = web3.utils.fromWei(value);
+			  	console.log({ test, from, to, value, amount, hash: rec.transactionHash });
 			    // console.log(rec.blockNumber, rec.transactionHash, rec.topics);
-			    web3.eth.getTransaction(rec.transactionHash).then(res => {
-			    	console.log(res)
+
+			    let buyTokenPrefix = web3.eth.abi.encodeFunctionSignature('buyToken(uint256)');
+			    let sellTokenPrefix = web3.eth.abi.encodeFunctionSignature('sellToken(uint256)');
+
+			    web3.eth.getTransaction(rec.transactionHash).then(tx => {
+		    	    let tx_data = tx.input;
+			    	if ( tx_data.indexOf(buyTokenPrefix)==0 ) {
+			    		let amount = web3.eth.abi.decodeParameter('uint256', tx_data.replace(buyTokenPrefix, ''))
+			    		console.log(amount);
+			    	}
 			    })
 			  });
 			}).catch(err => console.log("getPastLogs failed", err));
