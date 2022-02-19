@@ -1,0 +1,81 @@
+<template>
+	<div>
+		<h2>USDC <span class="loading" v-if="loading">Loading...</span><div class="subtitle">{{ address }}</div></h2>
+		<table border="1" cellpadding="10">
+			<thead>
+				<tr>
+					<td>Address</td>
+					<td>Balance</td>
+					<td>Action</td>
+				</tr>
+			</thead>
+			<tbody>
+				<tr v-for="acc in balances">
+					<td>{{ acc.address }}</td>
+					<td>{{ formatMoney(formatUSDC(acc.balance)) }}</td>
+					<td><button :disabled="loading" @click="mintToken(acc.address)">mintToken</button></td>
+				</tr>
+			</tbody>
+		</table>
+	</div>
+</template>
+<script type="text/javascript">
+const usdc = require("../contract/usdc.json");
+export default {
+	props: ['accounts'],
+	data() {
+		return {
+			USDC: null,
+			balances: [],
+			loading: false,
+			address: usdc.address
+		}
+	},
+	methods: {
+		async mintToken(from) {
+			let amount = window.prompt("How much VUSD do you want to sell ?","1000");
+			if ( !amount ) return;
+			this.loading = true;
+	        this.USDC.methods.mintToken(parseFloat(amount) * 10**6).send({ from }).then(result => {
+	        	let status = result.status;
+	        	if ( status ) this.getBalances();
+	        }).finally(e => {
+	        	this.loading = false;
+	        });
+	    },
+	    async getBalances() {
+	      for ( let acc of this.balances ) {
+	        acc.balance = await this.USDC.methods.balanceOf(acc.address).call();
+	      }
+	    },
+	    formatUSDC(value) {
+	      return value/10**6;
+	    },
+	    formatMoney(price) {
+	    	let dollarUSLocale = Intl.NumberFormat('en-US');
+	    	return dollarUSLocale.format(price)
+	    }
+	},
+	mounted() {
+		this.USDC = new web3.eth.Contract(usdc.abi, usdc.address);
+		this.balances = this.accounts.map(acc => ({
+			address: acc,
+			balance: 0
+		}));
+		this.getBalances()
+	}
+}
+</script>
+<style>
+h2 {
+	text-align: left;
+}
+.subtitle {
+	color: gray;
+	font-weight: normal;
+	font-size: 14px;
+}
+.loading {
+	color:  gray;
+}
+</style>
