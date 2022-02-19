@@ -109,7 +109,7 @@ contract VAN is ERC20 {
     function sellToken(uint amount) public {
         require(status, "Contract is maintaining");
         require(amount > 0, "invalid amount");
-        transfer(address(this), amount);
+        require(transfer(address(this), amount), "transfer failed");
         uint currentMoney = _moneyInPool;
         uint moneyInpool = (_tokenInPool * _moneyInPool) / (_tokenInPool + amount);
         uint receivedMoney = currentMoney - moneyInpool;
