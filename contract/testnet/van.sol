@@ -36,7 +36,7 @@ contract VAN is ERC20 {
     function buyToken(uint amount) public {
         require(status, "Contract is maintaining");
         require(amount > 0, "Please input amount greater than 0");
-        require(IERC20(VUSD).transferFrom(msg.sender, address(this), amount), "Transfer failed");
+        IERC20(VUSD).transferFrom(msg.sender, address(this), amount);
 
         uint nextBreak;
         uint assumingToken;
@@ -66,14 +66,14 @@ contract VAN is ERC20 {
             buyNowCost = moneyLeft;
 
             if (assumingToken>nextBreak) {
-                buyNowCost = state == statusEnum.ICO ? 
-                                    buyNowToken * icoPrice[currentStep]/100 : 
+                buyNowCost = state == statusEnum.ICO ?
+                                    buyNowToken * icoPrice[currentStep]/100 :
                                     ((_tokenInPool * _moneyInPool)/(_tokenInPool - buyNowToken) - _moneyInPool);
             }
             _moneyInPool += buyNowCost;
 
             if (state == statusEnum.ICO) {
-                tokenMint += buyNowToken; 
+                tokenMint += buyNowToken;
                 _tokenInPool += buyNowToken;
             } else {
                 tokenTranferForUser += buyNowToken;
@@ -109,16 +109,16 @@ contract VAN is ERC20 {
     function sellToken(uint amount) public {
         require(status, "Contract is maintaining");
         require(amount > 0, "invalid amount");
-        require(transfer(address(this), amount), "transfer failed");
+        transfer(address(this), amount);
         uint currentMoney = _moneyInPool;
         uint moneyInpool = (_tokenInPool * _moneyInPool) / (_tokenInPool + amount);
         uint receivedMoney = currentMoney - moneyInpool;
         IERC20(VUSD).transfer(msg.sender, receivedMoney/10**12);
         _moneyInPool -= receivedMoney;
-        _tokenInPool += amount; 
+        _tokenInPool += amount;
         if (state == statusEnum.ICO) {
             state = statusEnum.subIDO;
-        } 
+        }
         if (state == statusEnum.subIDO) {
             subIDOSold +=amount;
         }
@@ -144,7 +144,7 @@ contract VAN is ERC20 {
     function burnToken() public {
         require(msg.sender == owner, "permission denied");
         require(balanceOf(address(this))>_tokenInPool, "no token need to burn");
-        _burn(address(this), (balanceOf(address(this))-_tokenInPool));
+        _burn(address(this), balanceOf(address(this))-_tokenInPool);
     }
 
     function moneyCanWithdraw() public view returns(uint){
