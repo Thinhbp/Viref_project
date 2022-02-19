@@ -54,6 +54,9 @@ export default {
       if (window.ethereum) {
         await window.ethereum.request({method: 'eth_requestAccounts'});
         window.web3 = new Web3(window.ethereum);
+        this.getAccounts().then(accounts => {
+          this.accounts = accounts;
+        })
         return true;
       }
       return false;
@@ -63,11 +66,13 @@ export default {
     }
   },
   mounted() {
-    this.connectWallet().then(status => {
-      this.getAccounts().then(accounts => {
-        this.accounts = accounts;
-      })
+    web3.eth.net.isListening().then(status => {
       this.status = status;
+      if ( status ) {
+        this.getAccounts().then(accounts => {
+          this.accounts = accounts;
+        })
+      }
     }).finally(e => {
       this.loading = false;
     });
