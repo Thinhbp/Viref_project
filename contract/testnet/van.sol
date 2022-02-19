@@ -7,13 +7,13 @@ contract VAN is ERC20 {
     }
 
     address VUSD = 0xCD38FD5EdDe2E0009BF7eC41c256985B820ea1C8;
-    bool status = true; 
+    bool public status = true; 
     address owner = msg.sender;
-    uint _tokenInPool;
-    uint _moneyInPool;
+    uint public _tokenInPool;
+    uint public _moneyInPool;
     enum statusEnum { ICO, IDO, subIDO }
-    statusEnum state = statusEnum.ICO;
-    uint currentStep = 0;
+    statusEnum public state = statusEnum.ICO;
+    uint public currentStep = 0;
     uint subIDOSold = 0;
     uint[29] icoPrice =[10,20,40,80,160,320,640,1280,2560,5120,10240,20480,40960,81920,163840,
     327680,655360,1310720,2621440,5242880,10485760,20971520,41943040,83886080,167772160,335544320,671088640,1342177280,2684354560];
