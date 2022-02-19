@@ -5,7 +5,7 @@
       <div class="leftCol">
         <usdc :accounts="accounts" :extra="[vusdMetadata.address]" />
         <vusd :accounts="accounts" :extra="[vanMetadata.address]" />
-        <van :accounts="accounts" />
+        <van :accounts="accounts" :extra="[vanMetadata.address]" />
       </div>
       <div class="rightCol">
         <chart />
