@@ -22,7 +22,6 @@
 const Web3 = require("web3");
 const Web3Modal = require("web3modal").default;
 const WalletConnectProvider = require("@walletconnect/web3-provider").default;
-const detectEthereumProvider = require("@metamask/detect-provider");
 
 const usdc = require("./views/usdc").default;
 const vusd = require("./views/vusd").default;
@@ -93,26 +92,6 @@ export default {
     }
   },
   mounted() {
-    detectEthereumProvider().then(provider => {
-      if (provider) {
-          console.log('Ethereum successfully detected!')
-
-          // From now on, this should always be true:
-          // provider === window.ethereum
-
-          // Access the decentralized web!
-
-          // Legacy providers may only have ethereum.sendAsync
-          provider.request({
-            method: 'eth_chainId'
-          }).then(chainId => console.log({chainId}))
-        } else {
-
-          // if the provider is not detected, detectEthereumProvider resolves to null
-          console.error('Please install MetaMask!', error)
-        }
-    })
-    
     if ( window.ethereum ) {
       this.getAccounts().then(accounts => {
       console.log("accounts", accounts);
