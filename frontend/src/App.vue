@@ -5,7 +5,8 @@
         <div class="tabs">
           <div class="tab-item" :class="{active: tab=='contract'}" @click="tab='contract'">Contracts</div>
           <div class="tab-item" :class="{active: tab=='history'}" @click="tab='history'">History</div>
-          <button @click="connectWallet" class="btn-primary">Connect Wallet</button>
+          <button v-if="isConnected" @click="disconnectWallet" class="btn-primary">Disconnect Wallet</button>
+          <button v-else @click="connectWallet" class="btn-primary">Connect Wallet</button>
         </div>
         <div :style="{display: tab=='contract'?'block':'none'}">
           <usdc :accounts="accounts" :extra="[vusdMetadata.address]" />
@@ -48,11 +49,17 @@ export default {
   components: { usdc, vusd, van, chart, history },
   data() {
     return {
-      accounts: [],
+      accounts: null,
       loading: true,
       vusdMetadata,
       vanMetadata,
-      tab: 'contract'
+      tab: 'contract',
+      web3Modal: null
+    }
+  },
+  computed: {
+    isConnected() {
+      return this.accounts && this.accounts.length;
     }
   },
   methods: {
@@ -68,14 +75,14 @@ export default {
             }
           }
         };
-        const web3Modal = new Web3Modal({
+        this.web3Modal = new Web3Modal({
           // network: "mainnet", // optional
           cacheProvider: true, // optional
           providerOptions // required
         });
         let provider;
         try {
-          provider = await web3Modal.connect();
+          provider = this.web3Modal.connect();
         } catch(e) {
           console.log("Could not get a wallet connection", e);
           return;
@@ -87,6 +94,10 @@ export default {
         return true;
       // }
       // return false;
+    },
+    async disconnectWallet() {
+      await this.web3Modal.clearCachedProvider();
+      window.location.refresh();
     },
     async getAccounts() {
       if ( window.ethereum )
