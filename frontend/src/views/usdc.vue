@@ -21,6 +21,7 @@
 </template>
 <script type="text/javascript">
 const usdc = require("../contract/usdc.json");
+const helper = require("../helper").default;
 export default {
 	props: ['accounts', 'extra'],
 	data() {
@@ -47,13 +48,6 @@ export default {
 	      for ( let acc of this.balances ) {
 	        acc.balance = await this.USDC.methods.balanceOf(acc.address).call();
 	      }
-	    },
-	    formatUSDC(value) {
-	      return value/10**6;
-	    },
-	    formatMoney(price) {
-	    	let dollarUSLocale = Intl.NumberFormat('en-US');
-	    	return dollarUSLocale.format(price)
 	    }
 	},
 	mounted() {
@@ -64,7 +58,8 @@ export default {
 			mine: this.accounts.indexOf(acc)>=0
 		}));
 		this.getBalances()
-	}
+	},
+	mixins: [helper]
 }
 </script>
 <style>

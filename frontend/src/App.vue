@@ -6,6 +6,7 @@
         <usdc :accounts="accounts" :extra="[vusdMetadata.address]" />
         <vusd :accounts="accounts" :extra="[vanMetadata.address]" />
         <van :accounts="accounts" :extra="[vanMetadata.address]" />
+        <history />
       </div>
       <div class="rightCol">
         <chart />
@@ -27,13 +28,14 @@ const usdc = require("./views/usdc").default;
 const vusd = require("./views/vusd").default;
 const van = require("./views/van").default;
 const chart = require("./views/chart").default;
+const history = require("./views/history").default;
 
 const vusdMetadata = require("./contract/vusd.json");
 const usdcMetadata = require("./contract/usdc.json");
 const vanMetadata = require("./contract/van.json");
 
 export default {
-  components: { usdc, vusd, van, chart },
+  components: { usdc, vusd, van, chart, history },
   data() {
     return {
       accounts: [],
@@ -57,7 +59,7 @@ export default {
         };
         const web3Modal = new Web3Modal({
           // network: "mainnet", // optional
-          cacheProvider: false, // optional
+          cacheProvider: true, // optional
           providerOptions // required
         });
         let provider;
@@ -67,7 +69,6 @@ export default {
           console.log("Could not get a wallet connection", e);
           return;
         }
-        console.log({provider})
         window.web3 = new Web3(provider);
         this.getAccounts().then(accounts => {
           this.accounts = accounts;
@@ -94,7 +95,6 @@ export default {
   mounted() {
     if ( window.ethereum ) {
       this.getAccounts().then(accounts => {
-      console.log("accounts", accounts);
         if ( accounts.length )
           return this.connectWallet();
       }).catch(e => console.log(e)).finally(e => {

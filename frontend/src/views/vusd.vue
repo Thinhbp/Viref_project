@@ -22,6 +22,7 @@
 <script type="text/javascript">
 const vusd = require("../contract/vusd.json");
 const usdc = require("../contract/usdc.json");
+const helper = require("../helper").default;
 export default {
 	props: ['accounts', 'extra'],
 	data() {
@@ -72,13 +73,6 @@ export default {
 	    },
 	    convertTokenValue(amount) {
 	    	return parseFloat(amount) * 10**6;
-	    },
-	    formatUSDC(value) {
-	      return value/10**6;
-	    },
-	    formatMoney(price) {
-	    	let dollarUSLocale = Intl.NumberFormat('en-US');
-	    	return dollarUSLocale.format(price)
 	    }
 	},
 	mounted() {
@@ -90,7 +84,8 @@ export default {
 			mine: this.accounts.indexOf(acc)>=0
 		}));
 		this.getBalances()
-	}
+	},
+	mixins: [helper]
 }
 </script>
 <style scoped>
