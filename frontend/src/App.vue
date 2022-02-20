@@ -80,17 +80,36 @@ export default {
       if ( window.ethereum )
         return window.ethereum.request({ method: 'eth_accounts' })
       return [];
+    },
+    detectEthereum() {
+      const { ethereum } = window;
+      if (ethereum && ethereum.isMetaMask) {
+        console.log('Ethereum successfully detected!');
+        // Access the decentralized web!
+      } else {
+        console.log('Please install MetaMask!');
+      }
     }
   },
   mounted() {
     console.log("mounted");
-    this.getAccounts().then(accounts => {
-    console.log("accounts", accounts);
-      if ( accounts.length )
-        return this.connectWallet();
-    }).catch(e => console.log(e)).finally(e => {
-      this.loading = false;
-    })
+    if ( window.ethereum ) {
+      this.getAccounts().then(accounts => {
+      console.log("accounts", accounts);
+        if ( accounts.length )
+          return this.connectWallet();
+      }).catch(e => console.log(e)).finally(e => {
+        this.loading = false;
+      })
+    }  else {
+      window.addEventListener('ethereum#initialized', this.detectEthereum, {
+        once: true,
+      });
+
+      // If the event is not dispatched by the end of the timeout,
+      // the user probably doesn't have MetaMask installed.
+      setTimeout(this.detectEthereum, 3000); // 3 seconds
+    }
   }
 }
 </script>
