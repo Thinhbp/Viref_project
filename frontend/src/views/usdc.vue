@@ -34,7 +34,7 @@ export default {
 	},
 	methods: {
 		async mintToken(from) {
-			let amount = window.prompt("How much VUSD do you want to sell ?","1000");
+			let amount = window.prompt("How much USDC do you want ?","1000");
 			if ( !amount ) return;
 			this.loading = true;
 	        this.USDC.methods.mintToken(parseFloat(amount) * 10**6).send({ from }).then(result => {
