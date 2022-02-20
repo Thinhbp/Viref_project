@@ -45,7 +45,7 @@ export default {
   },
   methods: {
     async connectWallet() {
-      if (window.ethereum) {
+      // if (window.ethereum) {
         // await window.ethereum.request({method: 'eth_requestAccounts'});
         // window.web3 = new Web3(window.ethereum);
         const providerOptions = {
@@ -74,8 +74,8 @@ export default {
           this.accounts = accounts;
         })
         return true;
-      }
-      return false;
+      // }
+      // return false;
     },
     async getAccounts() {
       if ( window.ethereum )
