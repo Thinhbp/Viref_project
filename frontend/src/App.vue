@@ -1,11 +1,11 @@
 <template>
   <div id="app" class="bootstrap-wrapper">
-    <button @click="connectWallet" v-if="accounts.length==0" class="btn-primary">Connect Wallet</button>
     <div v-if="accounts.length" class="row">
       <div class="col-sm-12 col-md-4">
         <div class="tabs">
           <div class="tab-item" :class="{active: tab=='contract'}" @click="tab='contract'">Contracts</div>
           <div class="tab-item" :class="{active: tab=='history'}" @click="tab='history'">History</div>
+          <button @click="connectWallet" class="btn-primary">Connect Wallet</button>
         </div>
         <div :style="{display: tab=='contract'?'block':'none'}">
           <usdc :accounts="accounts" :extra="[vusdMetadata.address]" />
