@@ -63,7 +63,6 @@ export default {
 			this.loading = true;
 			amount = BigInt(parseFloat(amount) * 10**18).toString();
 			let approved = await this.VAN.methods.allowance(from, van.address).call({ from });
-			console.log({approved})
 			if ( !approved || parseFloat(approved)<amount ) {
 				let approve = await this.VAN.methods.approve(van.address, amount).send({ from });
 				if ( !approve || !approve.status ) {
