@@ -77,7 +77,9 @@ export default {
       return false;
     },
     async getAccounts() {
-      return window.ethereum.request({ method: 'eth_accounts' })
+      if ( window.ethereum )
+        return window.ethereum.request({ method: 'eth_accounts' })
+      return [];
     }
   },
   mounted() {
