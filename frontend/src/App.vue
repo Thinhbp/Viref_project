@@ -52,17 +52,7 @@ export default {
           walletconnect: {
             package: WalletConnectProvider, // required
             options: {
-              infuraId: "27e484dcd9e3efcfd25a83a78777cdf1", // required
-              qrcodeModalOptions: {
-                mobileLinks: [
-                  "rainbow",
-                  "metamask",
-                  "argent",
-                  "trust",
-                  "imtoken",
-                  "pillar",
-                ],
-              },
+              infuraId: "eff8bba2cb8a3a28cf5acd4cd2e3e59c" // required
             }
           }
         };
