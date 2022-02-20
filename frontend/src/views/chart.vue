@@ -92,7 +92,7 @@ export default {
           y: p.moneyInPool/p.tokenInPool,
           r: 6
         }],
-        backgroundColor: idx==this.selected ? 'red' : 'green'
+        backgroundColor: idx==this.selected ? 'red' : 'rgba(0,255,0,0.5)'
       }));
       return [...bubbles, {
         type: 'scatter',
