@@ -1,14 +1,22 @@
 <template>
-  <div id="app">
-    <button @click="connectWallet">Connect Wallet</button>
-    <div v-if="accounts.length" class="desk">
-      <div class="leftCol">
-        <usdc :accounts="accounts" :extra="[vusdMetadata.address]" />
-        <vusd :accounts="accounts" :extra="[vanMetadata.address]" />
-        <van :accounts="accounts" :extra="[vanMetadata.address]" />
-        <history />
+  <div id="app" class="bootstrap-wrapper">
+    <button @click="connectWallet" v-if="accounts.length==0" class="btn-primary">Connect Wallet</button>
+    <div v-if="accounts.length" class="row">
+      <div class="col-sm-12 col-md-4">
+        <div class="tabs">
+          <div class="tab-item" :class="{active: tab=='contract'}" @click="tab='contract'">Contracts</div>
+          <div class="tab-item" :class="{active: tab=='history'}" @click="tab='history'">History</div>
+        </div>
+        <div :style="{display: tab=='contract'?'block':'none'}">
+          <usdc :accounts="accounts" :extra="[vusdMetadata.address]" />
+          <vusd :accounts="accounts" :extra="[vanMetadata.address]" />
+          <van :accounts="accounts" :extra="[vanMetadata.address]" />
+        </div>
+        <div :style="{display: tab=='history'?'block':'none'}">
+          <history />
+        </div>
       </div>
-      <div class="rightCol">
+      <div class="col-sm-12 col-md-8">
         <chart />
       </div>
     </div>
@@ -34,6 +42,8 @@ const vusdMetadata = require("./contract/vusd.json");
 const usdcMetadata = require("./contract/usdc.json");
 const vanMetadata = require("./contract/van.json");
 
+import './views/grid.css';
+
 export default {
   components: { usdc, vusd, van, chart, history },
   data() {
@@ -41,7 +51,8 @@ export default {
       accounts: [],
       loading: true,
       vusdMetadata,
-      vanMetadata
+      vanMetadata,
+      tab: 'contract'
     }
   },
   methods: {
@@ -133,13 +144,28 @@ export default {
 #nav a.router-link-exact-active {
   color: #42b983;
 }
-.desk {
-  display: flex;
-  flex-direction: row;
+.cut-text { 
+  width : 200px;
+  overflow:hidden;
+  display:inline-block;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
-.leftCol {
+.tabs {
+  line-height: 40px;
+  width: 100%;
+  display: inline-block;
 }
-.rightCol {
-  flex: 1;
+.tab-item {
+  float: left;
+  padding: 0 10px;
+  border-bottom: 2px solid white;
+  cursor: pointer;
+}
+.tab-item.active {
+  border-bottom: 2px solid gray;
+}
+.btn-primary {
+  padding: 10px 20px;
 }
 </style>

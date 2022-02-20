@@ -1,22 +1,25 @@
 <template>
 	<div>
 		<h2>History</h2>
-		<table border="1" cellpadding="10">
-			<thead>
-				<tr>
-					<td style="text-align: left;">Event</td>
-					<td style="text-align: left;">Address</td>
-					<td style="text-align: right;">Amount</td>
-				</tr>
-			</thead>
-			<tbody>
-				<tr v-for="tx in transactions" :key="tx.transactionHash">
-					<td style="text-align: left; font-size: 15px">{{ tx.event }}</td>
-					<td style="text-align: left;">{{ tx.data.address }}</td>
-					<td style="text-align: right;">{{ formatMoney(formatVAN(tx.data.amount)) }} {{ tx.event=='buy'?'USD':'VAN' }}</td>
-				</tr>
-			</tbody>
-		</table>
+		<div class="history">
+			<table border="1" cellpadding="10">
+				<thead>
+					<tr>
+						<td style="text-align: left;">Event</td>
+						<td style="text-align: left;">Address</td>
+						<td style="text-align: right;">Amount</td>
+					</tr>
+				</thead>
+				<tbody>
+					<tr v-for="(tx,idx) in transactions" 
+						:key="tx.transactionHash" :style="{ cursor: 'pointer', color: selected==idx?'red':'black' }" @click="select(idx)">
+						<td style="text-align: left; font-size: 15px">{{ tx.event }}</td>
+						<td style="text-align: left;"><span class="cut-text">{{ tx.data.address }}</span></td>
+						<td style="text-align: right;">{{ formatMoney(formatVAN(tx.data.amount)) }} {{ tx.event=='buy'?'USD':'VAN' }}</td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
 	</div>
 </template>
 <script type="text/javascript">
@@ -26,10 +29,15 @@ export default {
 	data() {
 		return {
 			VAN: null,
-			transactions: []
+			transactions: [],
+			selected: -1
 		}
 	},
 	methods: {
+		select(i) {
+			this.selected = i;
+			EventBus.$emit("selectHistory", i);
+		},
 	    getLogsEvent(event) {
 	    	return this.VAN.getPastEvents(event, {
 			    fromBlock: 0,
@@ -105,5 +113,8 @@ export default {
 }
 </script>
 <style scoped>
-
+.history {
+	max-height: 70vh;
+	overflow-y: auto;
+}
 </style>

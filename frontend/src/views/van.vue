@@ -1,7 +1,7 @@
 <template>
 	<div>
 		<h2>VAN <span class="loading" v-if="loading">Loading...</span><div class="subtitle">{{ address }}</div></h2>
-		<table border="1" cellpadding="10">
+		<table border="1" cellpadding="10" >
 			<thead>
 				<tr>
 					<td style="text-align: left;">Address</td>
@@ -11,7 +11,7 @@
 			</thead>
 			<tbody>
 				<tr v-for="acc in balances">
-					<td style="text-align: left; font-size: 15px">{{ acc.address }}</td>
+					<td style="text-align: left; font-size: 15px"><span class="cut-text">{{ acc.address }}</span></td>
 					<td style="text-align: right;">{{ formatMoney(formatVAN(acc.balance)) }}</td>
 					<td><button v-if="acc.mine" :disabled="loading" @click="buyToken(acc.address)">Buy</button> <button v-if="acc.mine" :disabled="loading" @click="sellToken(acc.address)">Sell</button></td>
 				</tr>

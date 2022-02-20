@@ -11,7 +11,7 @@
 			</thead>
 			<tbody>
 				<tr v-for="acc in balances">
-					<td style="text-align: left; font-size: 15px">{{ acc.address }}</td>
+					<td style="text-align: left; font-size: 15px"><span class="cut-text">{{ acc.address }}</span></td>
 					<td style="text-align: right;">{{ formatMoney(formatUSDC(acc.balance)) }}</td>
 					<td><button :disabled="loading" @click="mintToken(acc.address)" v-if="acc.mine">mintToken</button></td>
 				</tr>

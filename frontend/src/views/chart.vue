@@ -171,6 +171,10 @@ export default {
         this.drawChart();
       })
     })
+    EventBus.$on("selectHistory", i => {
+      this.selected = i;
+      this.drawChart();
+    })
   },
   mixins: [helper]
 }
@@ -178,6 +182,13 @@ export default {
 <style scoped>
 .currentInfo {
   text-align: left;
-  padding-left: 100px;
+  padding: 20px;
+  background-color: rgba(190, 190, 190, 0.3);
+  display: inline-block;
+  border-radius: 6px;
+  margin-top: 20px;
+}
+.currentInfo p {
+  margin: 0 4px;
 }
 </style>
