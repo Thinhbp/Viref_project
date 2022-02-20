@@ -21,7 +21,7 @@
 <script>
 const Web3 = require("web3");
 const Web3Modal = require("web3modal").default;
-const WalletConnectProvider = require("@walletconnect/web3-provider");
+const WalletConnectProvider = require("@walletconnect/web3-provider").default;
 
 const usdc = require("./views/usdc").default;
 const vusd = require("./views/vusd").default;
@@ -48,19 +48,26 @@ export default {
         // await window.ethereum.request({method: 'eth_requestAccounts'});
         // window.web3 = new Web3(window.ethereum);
         const providerOptions = {
-          // walletconnect: {
-          //   package: WalletConnectProvider, // required
-          //   options: {
-          //     infuraId: "eff8bba2cb8a3a28cf5acd4cd2e3e59c" // required
-          //   }
-          // }
+          walletconnect: {
+            package: WalletConnectProvider, // required
+            options: {
+              infuraId: "eff8bba2cb8a3a28cf5acd4cd2e3e59c" // required
+            }
+          }
         };
         const web3Modal = new Web3Modal({
-          network: "mainnet", // optional
-          cacheProvider: true, // optional
+          // network: "mainnet", // optional
+          cacheProvider: false, // optional
           providerOptions // required
         });
-        const provider = await web3Modal.connect();
+        let provider;
+        try {
+          provider = await web3Modal.connect();
+        } catch(e) {
+          console.log("Could not get a wallet connection", e);
+          return;
+        }
+        console.log({provider})
         window.web3 = new Web3(provider);
         this.getAccounts().then(accounts => {
           this.accounts = accounts;
