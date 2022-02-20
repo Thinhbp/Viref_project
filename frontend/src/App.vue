@@ -52,7 +52,7 @@ export default {
           walletconnect: {
             package: WalletConnectProvider, // required
             options: {
-              infuraId: "eff8bba2cb8a3a28cf5acd4cd2e3e59c" // required
+              infuraId: "8043bb2cf99347b1bfadfb233c5325c0" // required
             }
           }
         };
