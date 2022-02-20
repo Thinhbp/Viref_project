@@ -1,12 +1,11 @@
 <template>
   <div id="app" class="bootstrap-wrapper">
-    <div v-if="accounts.length" class="row">
+    <div v-if="isConnected" class="row">
       <div class="col-sm-12 col-md-4">
         <div class="tabs">
           <div class="tab-item" :class="{active: tab=='contract'}" @click="tab='contract'">Contracts</div>
           <div class="tab-item" :class="{active: tab=='history'}" @click="tab='history'">History</div>
-          <button v-if="isConnected" @click="disconnectWallet" class="btn-primary">Disconnect Wallet</button>
-          <button v-else @click="connectWallet" class="btn-primary">Connect Wallet</button>
+          <button @click="disconnectWallet" class="btn-primary">Disconnect Wallet</button>
         </div>
         <div :style="{display: tab=='contract'?'block':'none'}">
           <usdc :accounts="accounts" :extra="[vusdMetadata.address]" />
@@ -21,6 +20,7 @@
         <chart />
       </div>
     </div>
+    <button v-else @click="connectWallet" class="btn-primary">Connect Wallet</button>
     <!-- <div id="nav">
       <router-link to="/">Home</router-link> |
       <router-link to="/about">About</router-link>
@@ -59,7 +59,8 @@ export default {
   },
   computed: {
     isConnected() {
-      return this.accounts && this.accounts.length;
+      const cachedProviderName = JSON.parse(localStorage.getItem("WEB3_CONNECT_CACHED_PROVIDER"));
+      return this.accounts && this.accounts.length && cachedProviderName;
     }
   },
   methods: {
@@ -82,7 +83,7 @@ export default {
         });
         let provider;
         try {
-          provider = this.web3Modal.connect();
+          provider = await this.web3Modal.connect();
         } catch(e) {
           console.log("Could not get a wallet connection", e);
           return;
@@ -97,7 +98,7 @@ export default {
     },
     async disconnectWallet() {
       await this.web3Modal.clearCachedProvider();
-      window.location.refresh();
+      window.location.reload();
     },
     async getAccounts() {
       if ( window.ethereum )
