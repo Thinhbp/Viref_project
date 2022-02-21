@@ -4,6 +4,8 @@
       <p>Token in Pool : {{ formatMoney(tokenInPool) }} VAN</p>
       <p>Money in Pool : {{ formatMoney(moneyInPool) }} VUSD</p>
       <p>Current Price : {{ formatMoney(moneyInPool/tokenInPool) }} VUSD/VAN</p>
+      <p>Total supply : {{ formatMoney(totalSupply) }} VAN</p>
+      <p>Money can withdraw : {{ formatMoney(moneyCanWithdraw) }} VUSD</p>
       <p>Current step : {{ currentStep }}</p>
       <p>In active : {{ active }}</p>
     </div>
@@ -78,7 +80,13 @@ export default {
       tokenInPool: 0,
       moneyInPool: 0,
       currentStep: 0,
+      totalSupply: 0,
       active: true
+    }
+  },
+  computed: {
+    moneyCanWithdraw() {
+      return this.totalSupply==0?0:(this.moneyInPool*this.tokenInPool/this.totalSupply)
     }
   },
   methods: {
@@ -140,6 +148,7 @@ export default {
       let _tokenInPool = await this.VAN.methods._tokenInPool().call();
       this.currentStep = await this.VAN.methods.currentStep().call();
       this.active = await this.VAN.methods.status().call();
+      this.totalSupply = Web3.utils.fromWei(await this.VAN.methods.totalSupply().call());
       
       this.moneyInPool = Web3.utils.fromWei(_moneyInPool, 'ether');
       this.tokenInPool = Web3.utils.fromWei(_tokenInPool, 'ether');
