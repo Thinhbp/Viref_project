@@ -1,10 +1,10 @@
 <template>
   <div class="chain-selection">
     <p>
-      <span
+      <span v-if="networkNameHandler"
         >The current network is:
         <span
-          ><strong>{{ networkNameHandler(networkId) }}</strong></span
+          ><strong>{{ networkNameHandler }}</strong></span
         ></span
       >
     </p>
@@ -15,35 +15,39 @@
       <option value="goerli">Goerli Test Network</option>
       <option value="kovan">Kovan Test Network</option>
     </select> -->
-    <button class="btn-submit" @click="switchToRopstenHandler" >
+    <button class="btn-submit" @click="switchToRopstenHandler">
       Switch to Ropsten Test Network
     </button>
   </div>
 </template>
 
 <script>
-const {networkName} = require("../constants/constantNetwork")
+const { networkName } = require("../constants/constantNetwork")
 
 const helper = require("../helper").default;
 
 export default {
   data() {
     return {
-      option: "ethereum",
       networkName: networkName,
-      chainId: null
+      chainId: null,
+      isNetworkNameShown: true,
     };
   },
   props: {
     networkId: {
       type: Number,
-      require: true,
     },
   },
+  computed:{
+    networkNameHandler() {
+      return Object.keys(networkName).find((key) => networkName[key] === this.networkId);
+    }
+  },
   methods: {
-    optionHandler(event) {
-      this.option = event.target.value;
-    },
+    // optionHandler(event) {
+    //   this.option = event.target.value;
+    // },
     // Function to get hex value of corresponding network
     // getHexValue() {
     //   Object.keys(chainId).find((key) => {
@@ -53,7 +57,6 @@ export default {
     //   });
     // },
     async switchToRopstenHandler() {
-      // await this.getHexValue()
       try {
         await ethereum.request({
           method: "wallet_switchEthereumChain",
@@ -63,9 +66,6 @@ export default {
       } catch (error) {
         console.log(error);
       }
-    },
-    networkNameHandler(id) {
-      return Object.keys(networkName).find((key) => networkName[key] === id);
     },
   },
   mixins: [helper]

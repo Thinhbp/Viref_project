@@ -12,4 +12,6 @@ export const networkName = {
   "Rinkeby Test Network": 4,
   "Goerli Test Network": 5,
   "Kovan Test Network": 42,
+  "Smart Chain Test Network": 97,
+  "Smart Chain Main Network": 56
 };
