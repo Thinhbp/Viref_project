@@ -112,8 +112,8 @@ export default {
         }))
       }]
     },
-    loadForecast(maxToken, maxMoney) {
-      return fetch(`https://vinet.gostudio.co/forecast?maxToken=${maxToken}&maxMoney=${maxMoney}`).then(res => res.json()).then(res => {
+    loadForecast(maxPrice, maxMoney) {
+      return fetch(`https://vinet.gostudio.co/forecast?maxPrice=${maxPrice}&maxMoney=${maxMoney}`).then(res => res.json()).then(res => {
         this.forecastData = res;
         return true;
       }).catch(e => {
@@ -152,10 +152,6 @@ export default {
       
       this.moneyInPool = Web3.utils.fromWei(_moneyInPool, 'ether');
       this.tokenInPool = Web3.utils.fromWei(_tokenInPool, 'ether');
-      
-      this.loadForecast(this.tokenInPool, this.moneyInPool).then(res => {
-        this.drawChart();
-      })
     },
   },
   mounted() {
@@ -177,7 +173,16 @@ export default {
         })
       }).then(res => res.json()).then(res => {
         this.historyData = res;
-        this.drawChart();
+        let maxPrice = 0;
+        let maxMoney = 0;
+        res.forEach(p => {
+          let price = p.moneyInPool/p.tokenInPool;
+          maxPrice = Math.max(price, maxPrice)
+          maxMoney = Math.max(p.moneyInPool, maxMoney)
+        })
+        return this.loadForecast(maxPrice, maxMoney).then(res => {
+          this.drawChart();
+        })
       })
     })
     EventBus.$on("selectHistory", i => {
