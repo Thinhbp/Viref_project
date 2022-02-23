@@ -6,6 +6,7 @@
           <div class="tab-item" :class="{active: tab=='contract'}" @click="tab='contract'">Contracts</div>
           <div class="tab-item" :class="{active: tab=='history'}" @click="tab='history'">History</div>
           <button @click="disconnectWallet" class="btn-primary">Disconnect Wallet</button>
+          <chain-selection :network-id="networkId" />
         </div>
         <div :style="{display: tab=='contract'?'block':'none'}">
           <usdc :accounts="accounts" :extra="[vusdMetadata.address]" />
@@ -38,15 +39,18 @@ const vusd = require("./views/vusd").default;
 const van = require("./views/van").default;
 const chart = require("./views/chart").default;
 const history = require("./views/history").default;
+const chainSelection = require("./components/ChainSelection.vue").default;
 
 const vusdMetadata = require("./contract/vusd.json");
 const usdcMetadata = require("./contract/usdc.json");
 const vanMetadata = require("./contract/van.json");
 
+const helper = require("./helper").default;
+
 import './views/grid.css';
 
 export default {
-  components: { usdc, vusd, van, chart, history },
+  components: { usdc, vusd, van, chart, history, chainSelection },
   data() {
     return {
       accounts: null,
@@ -54,7 +58,8 @@ export default {
       vusdMetadata,
       vanMetadata,
       tab: 'contract',
-      web3Modal: null
+      web3Modal: null,
+      networkId: null
     }
   },
   computed: {
@@ -113,7 +118,11 @@ export default {
       } else {
         console.log('Please install MetaMask!');
       }
-    }
+    },
+    async getCurrentNetwork() {
+      const id = await web3.eth.net.getId()
+      this.networkId = id
+    },
   },
   mounted() {
     if ( window.ethereum ) {
@@ -132,7 +141,12 @@ export default {
       // the user probably doesn't have MetaMask installed.
       setTimeout(this.detectEthereum, 3000); // 3 seconds
     }
-  }
+  },
+  updated() {
+    this.getCurrentNetwork()
+    this.onChainChanged()
+  },
+  mixins: [helper]
 }
 </script>
 <style>
