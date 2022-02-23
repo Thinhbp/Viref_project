@@ -10,5 +10,10 @@ export default {
 	    formatUSDC(value) {
 	      return value/10**6;
 	    },
+		async onChainChanged() {			
+			await ethereum.on("chainChanged", () => {
+				window.location.reload();
+			});
+		}
 	}
 }

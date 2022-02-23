@@ -1,11 +1,12 @@
 <template>
   <div id="app" class="bootstrap-wrapper">
-    <div v-if="isConnected" class="row">
+    <div v-if="isConnected && isRopstenNetwork" class="row">
       <div class="col-sm-12 col-md-4">
         <div class="tabs">
           <div class="tab-item" :class="{active: tab=='contract'}" @click="tab='contract'">Contracts</div>
           <div class="tab-item" :class="{active: tab=='history'}" @click="tab='history'">History</div>
           <button @click="disconnectWallet" class="btn-primary">Disconnect Wallet</button>
+          
         </div>
         <div :style="{display: tab=='contract'?'block':'none'}">
           <usdc :accounts="accounts" :extra="[vusdMetadata.address]" />
@@ -20,7 +21,10 @@
         <chart />
       </div>
     </div>
-    <button v-else @click="connectWallet" class="btn-primary">Connect Wallet</button>
+    <button v-if="!isConnected" @click="connectWallet" class="btn-primary">Connect Wallet</button>
+    <div v-if="isConnected && !isRopstenNetwork">
+      <chain-selection :network-id="networkId" />
+    </div>
     <!-- <div id="nav">
       <router-link to="/">Home</router-link> |
       <router-link to="/about">About</router-link>
@@ -38,15 +42,18 @@ const vusd = require("./views/vusd").default;
 const van = require("./views/van").default;
 const chart = require("./views/chart").default;
 const history = require("./views/history").default;
+const chainSelection = require("./components/ChainSelection.vue").default;
 
 const vusdMetadata = require("./contract/vusd.json");
 const usdcMetadata = require("./contract/usdc.json");
 const vanMetadata = require("./contract/van.json");
 
+const helper = require("./helper").default;
+
 import './views/grid.css';
 
 export default {
-  components: { usdc, vusd, van, chart, history },
+  components: { usdc, vusd, van, chart, history, chainSelection },
   data() {
     return {
       accounts: null,
@@ -54,13 +61,17 @@ export default {
       vusdMetadata,
       vanMetadata,
       tab: 'contract',
-      web3Modal: null
+      web3Modal: null,
+      networkId: null
     }
   },
   computed: {
     isConnected() {
       const cachedProviderName = JSON.parse(localStorage.getItem("WEB3_CONNECT_CACHED_PROVIDER"));
       return this.accounts && this.accounts.length && cachedProviderName;
+    },
+    isRopstenNetwork() {
+      return this.networkId == 3
     }
   },
   methods: {
@@ -113,7 +124,11 @@ export default {
       } else {
         console.log('Please install MetaMask!');
       }
-    }
+    },
+    async getCurrentNetwork() {
+      const id = await web3.eth.net.getId()
+      this.networkId = id
+    },
   },
   mounted() {
     if ( window.ethereum ) {
@@ -132,7 +147,12 @@ export default {
       // the user probably doesn't have MetaMask installed.
       setTimeout(this.detectEthereum, 3000); // 3 seconds
     }
-  }
+  },
+  updated() {
+    this.getCurrentNetwork()
+    this.onChainChanged()
+  },
+  mixins: [helper]
 }
 </script>
 <style>
