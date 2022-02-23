@@ -8,21 +8,21 @@
         ></span
       >
     </p>
-    <select class="select-box" @change="optionHandler">
+    <!-- <select class="select-box" @change="optionHandler">
       <option value="ethereum">Ethereum Main Network (Mainnet)</option>
       <option value="ropsten">Ropsten Test Network</option>
       <option value="rinkeby">Rinkeby Test Network</option>
       <option value="goerli">Goerli Test Network</option>
       <option value="kovan">Kovan Test Network</option>
-    </select>
-    <button class="btn-submit" @click="changeNetworkHandler">
-      Change Network
+    </select> -->
+    <button class="btn-submit" @click="switchToRopstenHandler" >
+      Switch to Ropsten Test Network
     </button>
   </div>
 </template>
 
 <script>
-const {chainId, networkName} = require("../constants/constantNetwork")
+const {networkName} = require("../constants/constantNetwork")
 
 const helper = require("../helper").default;
 
@@ -44,19 +44,20 @@ export default {
     optionHandler(event) {
       this.option = event.target.value;
     },
-    getHexValue() {
-      Object.keys(chainId).find((key) => {
-          if(key == this.option) {
-            this.chainId = chainId[key]
-          }
-      });
-    },
-    async changeNetworkHandler() {
-      await this.getHexValue()
+    // Function to get hex value of corresponding network
+    // getHexValue() {
+    //   Object.keys(chainId).find((key) => {
+    //       if(key == this.option) {
+    //         this.chainId = chainId[key]
+    //       }
+    //   });
+    // },
+    async switchToRopstenHandler() {
+      // await this.getHexValue()
       try {
         await ethereum.request({
           method: "wallet_switchEthereumChain",
-          params: [{ chainId: this.chainId }],
+          params: [{ chainId: "0x3" }],
         });
         this.onChainChanged()
       } catch (error) {
@@ -73,7 +74,7 @@ export default {
 
 <style scoped>
 .chain-selection {
-  width: 90%;
+  text-align: center;
 }
 .select-box {
   width: 250px;

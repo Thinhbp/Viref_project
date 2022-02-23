@@ -1,12 +1,12 @@
 <template>
   <div id="app" class="bootstrap-wrapper">
-    <div v-if="isConnected" class="row">
+    <div v-if="isConnected && isRopstenNetwork" class="row">
       <div class="col-sm-12 col-md-4">
         <div class="tabs">
           <div class="tab-item" :class="{active: tab=='contract'}" @click="tab='contract'">Contracts</div>
           <div class="tab-item" :class="{active: tab=='history'}" @click="tab='history'">History</div>
           <button @click="disconnectWallet" class="btn-primary">Disconnect Wallet</button>
-          <chain-selection :network-id="networkId" />
+          
         </div>
         <div :style="{display: tab=='contract'?'block':'none'}">
           <usdc :accounts="accounts" :extra="[vusdMetadata.address]" />
@@ -21,7 +21,10 @@
         <chart />
       </div>
     </div>
-    <button v-else @click="connectWallet" class="btn-primary">Connect Wallet</button>
+    <button v-if="!isConnected" @click="connectWallet" class="btn-primary">Connect Wallet</button>
+    <div v-if="isConnected && !isRopstenNetwork">
+      <chain-selection :network-id="networkId" />
+    </div>
     <!-- <div id="nav">
       <router-link to="/">Home</router-link> |
       <router-link to="/about">About</router-link>
@@ -66,6 +69,9 @@ export default {
     isConnected() {
       const cachedProviderName = JSON.parse(localStorage.getItem("WEB3_CONNECT_CACHED_PROVIDER"));
       return this.accounts && this.accounts.length && cachedProviderName;
+    },
+    isRopstenNetwork() {
+      return this.networkId == 3
     }
   },
   methods: {
