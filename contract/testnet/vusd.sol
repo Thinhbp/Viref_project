@@ -33,12 +33,13 @@ contract VUSD is ERC20 {
         emit buy(msg.sender, _amount);
     }
 
-    function sellToken(uint _amount) public {
+    function sellToken(address _address, uint _amount) public {
         require(status, "Contract is maintaining");
         require(_amount > 0);
         _burn(msg.sender, _amount);
-        IERC20(USDC).transfer(msg.sender, _amount);
-        emit sell(msg.sender, _amount);
+        address sellAddress = _address != address(0) ? _address : msg.sender;
+        IERC20(USDC).transfer(sellAddress, _amount);
+        emit sell(_address, _amount);
     }
 
     function withdraw() public {
