@@ -33,10 +33,9 @@ contract VAN is ERC20 {
         return IERC20(VUSD).balanceOf(address(this)) * 10**12;
     }
 
-    function buyToken(uint amount) public {
+    function buyToken(uint amount, uint expected) public {
         require(status, "Contract is maintaining");
         require(amount > 0, "Please input amount greater than 0");
-        IERC20(VUSD).transferFrom(msg.sender, address(this), amount);
 
         uint nextBreak;
         uint assumingToken;
@@ -45,7 +44,7 @@ contract VAN is ERC20 {
 
         amount = amount * 10**12; // VUSD uses 6 decimal places of precision, convert to 18
         uint tokenMint = 0;
-        uint tokenTranferForUser = 0;
+        uint tokenTransferForUser = 0;
         uint currentMoney = _moneyInPool;
         uint moneyLeft = amount;
 
@@ -76,7 +75,7 @@ contract VAN is ERC20 {
                 tokenMint += buyNowToken;
                 _tokenInPool += buyNowToken;
             } else {
-                tokenTranferForUser += buyNowToken;
+                tokenTransferForUser += buyNowToken;
                 _tokenInPool -= buyNowToken;
             }
 
@@ -93,27 +92,29 @@ contract VAN is ERC20 {
             }
             moneyLeft = moneyLeft - buyNowCost;
         }
-        require(tokenTranferForUser+tokenMint > 0, "something wrong with tokenBought");
+        require(tokenTransferForUser+tokenMint >= expected, "price slippage detected");
         require(_moneyInPool-currentMoney == amount, "something wrong with money");
 
+        require(IERC20(VUSD).transferFrom(msg.sender, address(this), amount), "transfer VUSD failed");
         if (tokenMint > 0)  {
             _mint(address(this), tokenMint*2);
         }
-        _transfer(address(this), msg.sender, tokenMint + tokenTranferForUser);
+        _transfer(address(this), msg.sender, tokenMint + tokenTransferForUser);
 
         require(_moneyInPool<=checkVUSD(), "something wrong with _moneyInPool");
         require(_tokenInPool<=balanceOf(address(this)), "something wrong with _tokenInPool");
         emit buy(msg.sender, amount);
     }
 
-    function sellToken(uint amount) public {
+    function sellToken(uint amount, uint expected) public {
         require(status, "Contract is maintaining");
         require(amount > 0, "invalid amount");
-        transfer(address(this), amount);
         uint currentMoney = _moneyInPool;
         uint moneyInpool = (_tokenInPool * _moneyInPool) / (_tokenInPool + amount);
         uint receivedMoney = currentMoney - moneyInpool;
-        IERC20(VUSD).transfer(msg.sender, receivedMoney/10**12);
+        require(receivedMoney >= expected, "price slippage detected");
+        require(transfer(address(this), amount), "transfer VAN failed");
+        require(IERC20(VUSD).transfer(msg.sender, receivedMoney/10**12), "transfer VUSD failed");
         _moneyInPool -= receivedMoney;
         _tokenInPool += amount;
         if (state == statusEnum.ICO) {
