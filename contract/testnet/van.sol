@@ -142,13 +142,14 @@ contract VAN is ERC20 {
         emit changestatus(_status);
     }
 
-    function burnToken() public {
+    function collectWastedToken(address _address) public {
         require(msg.sender == owner, "permission denied");
-        require(balanceOf(address(this))>_tokenInPool, "no token need to burn");
-        _burn(address(this), balanceOf(address(this))-_tokenInPool);
+        uint wastedToken = balanceOf(address(this)) - _tokenInPool;
+        require(wastedToken>0, "no token need to burn");
+        _transfer(address(this), _address, wastedToken);
     }
 
-    function moneyCanWithdraw() public view returns(uint){
-        return _tokenInPool * _moneyInPool / totalSupply();
+    function moneyCanWithdraw() public view returns(uint) {
+        return _tokenInPool*_moneyInPool/totalSupply() + (checkVUSD()-moneyInPool);
     }
 }
