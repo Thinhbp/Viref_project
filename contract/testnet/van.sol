@@ -150,6 +150,6 @@ contract VAN is ERC20 {
     }
 
     function moneyCanWithdraw() public view returns(uint) {
-        return _tokenInPool*_moneyInPool/totalSupply() + (checkVUSD()-moneyInPool);
+        return _tokenInPool*_moneyInPool/totalSupply() + (checkVUSD()-_moneyInPool);
     }
 }
