@@ -91,7 +91,7 @@ contract VAN is ERC20 {
                     subIDOSold = 0;
                 }
             } else if ( state==statusEnum.subIDO ) {
-                subIDOSold -= buyNowToken
+                subIDOSold -= buyNowToken;
             }
             moneyLeft = moneyLeft - buyNowCost;
         }
