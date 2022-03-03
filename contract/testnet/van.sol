@@ -15,14 +15,14 @@ contract VAN is ERC20 {
     statusEnum public state = statusEnum.ICO;
     uint public currentStep = 0;
     uint subIDOSold = 0;
-    uint[29] icoPrice =[10,20,40,80,160,320,640,1280,2560,5120,10240,20480,40960,81920,163840,
-    327680,655360,1310720,2621440,5242880,10485760,20971520,41943040,83886080,167772160,335544320,671088640,1342177280,2684354560];
-    uint[29] tokenBeforeICO = [0,353553390593273762200422,603553390593273762200422,780330085889910643300633,905330085889910643300633,
+    uint[30] icoPrice =[10,20,40,80,160,320,640,1280,2560,5120,10240,20480,40960,81920,163840,327680,655360,1310720,
+    2621440,5242880,10485760,20971520,41943040,83886080,167772160,335544320,671088640,1342177280,2684354560,5368709120];
+    uint[30] tokenBeforeICO = [0,353553390593273762200422,603553390593273762200422,780330085889910643300633,905330085889910643300633,
     993718433538229083850739,1056218433538229083850739,1100412607362388304125792,1131662607362388304125792,1153759694274467914263318,
     1169384694274467914263318,1180433237730507719332081,1188245737730507719332081,1193770009458527621866463,1197676259458527621866463,
     1200438395322537573133654,1202391520322537573133654,1203772588254542548767249,1204749150754542548767249,1205439684720545036584047,
     1205927965970545036584047,1206273232953546280492445,1206517373578546280492445,1206690007070046902446645,1206812077382546902446645,
-    1206898394128297213423745,1206959429284547213423745,1207002587657422368912294,1207033105235547368912294];
+    1206898394128297213423745,1206959429284547213423745,1207002587657422368912294,1207033105235547368912294,1207054684421984946656569];
     
     event buy(address _address, uint _amount);
     event sell(address _address, uint _amount);
@@ -36,6 +36,7 @@ contract VAN is ERC20 {
     function buyToken(uint amount, uint expected) public {
         require(status, "Contract is maintaining");
         require(amount > 0, "Please input amount greater than 0");
+        require(IERC20(VUSD).transferFrom(msg.sender, address(this), amount), "transfer VUSD failed");
 
         uint nextBreak;
         uint assumingToken;
@@ -53,7 +54,7 @@ contract VAN is ERC20 {
                 nextBreak = (tokenBeforeICO[currentStep] + 5 * 10**5 * 10 **18) - _tokenInPool;
                 assumingToken = moneyLeft * 100/icoPrice[currentStep];
             } else {
-                if (currentStep==28 && state==statusEnum.IDO) { // nomore ICO
+                if (currentStep==29 && state==statusEnum.IDO) { // nomore ICO
                     nextBreak = 2**256 - 1; // MAX_INT
                 } else {
                     nextBreak = state == statusEnum.subIDO ? subIDOSold : (_tokenInPool - tokenBeforeICO[currentStep + 1]);
@@ -95,7 +96,6 @@ contract VAN is ERC20 {
         require(tokenTransferForUser+tokenMint >= expected, "price slippage detected");
         require(_moneyInPool-currentMoney == amount, "something wrong with money");
 
-        require(IERC20(VUSD).transferFrom(msg.sender, address(this), amount), "transfer VUSD failed");
         if (tokenMint > 0)  {
             _mint(address(this), tokenMint*2);
         }
