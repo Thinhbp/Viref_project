@@ -28,7 +28,7 @@ contract VUSD is ERC20 {
     function buyToken(uint _amount) public {
         require(status, "Contract is maintaining");
         require(_amount > 0);
-        IERC20(USDC).transferFrom(msg.sender, address(this), _amount);
+        require(IERC20(USDC).transferFrom(msg.sender, address(this), _amount), "Transfer failed");
         _mint(msg.sender, _amount);
         emit buy(msg.sender, _amount);
     }
@@ -40,7 +40,7 @@ contract VUSD is ERC20 {
         if ( _address == address(0) ) {
             _address = msg.sender;
         }
-        IERC20(USDC).transfer(_address, _amount);
+        require(IERC20(USDC).transfer(_address, _amount),"Transfer failed");
         emit sell(_address, _amount);
     }
 
@@ -49,7 +49,7 @@ contract VUSD is ERC20 {
         require(vanAddress != address(0), "invalid vanAddress");
         uint moneyCanWithdraw = VAN(vanAddress).moneyCanWithdraw();
         require(moneyCanWithdraw > moneyWithdrawed, "no money can withdraw");
-        IERC20(USDC).transfer(msg.sender, moneyCanWithdraw - moneyWithdrawed);
+        require(IERC20(USDC).transfer(msg.sender, moneyCanWithdraw - moneyWithdrawed),"Transfer failed");
         moneyWithdrawed += moneyCanWithdraw - moneyWithdrawed;
     }
     
