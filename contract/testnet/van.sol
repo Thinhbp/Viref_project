@@ -80,7 +80,7 @@ contract VAN is ERC20 {
                 _tokenInPool -= buyNowToken;
             }
 
-            if (assumingToken >= nextBreak) {
+            if (assumingToken>=nextBreak) {
                 if (state == statusEnum.ICO) {
                     state = statusEnum.IDO;
                 } else {
@@ -90,6 +90,8 @@ contract VAN is ERC20 {
                     state = statusEnum.ICO;
                     subIDOSold = 0;
                 }
+            } else if ( state==statusEnum.subIDO ) {
+                subIDOSold -= buyNowToken
             }
             moneyLeft = moneyLeft - buyNowCost;
         }
