@@ -51,7 +51,7 @@ export default {
 					return false;
 				}
 			}
-	        this.VREF.methods.buyToken(amount).send({ from }).then(result => {
+	        this.VREF.methods.buyToken(amount, 0).send({ from }).then(result => {
 	        	let status = result.status;
 	        	if ( status ) window.location.reload();
 	        }).finally(e => {
@@ -73,7 +73,7 @@ export default {
 				}
 			}
 
-	        this.VREF.methods.sellToken(amount).send({ from }).then(result => {
+	        this.VREF.methods.sellToken(amount, 0).send({ from }).then(result => {
 	        	let status = result.status;
 	        	if ( status ) window.location.reload();
 	        }).finally(e => {
