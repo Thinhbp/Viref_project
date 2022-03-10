@@ -2,11 +2,11 @@
 pragma solidity ^0.8.10;
 import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 
-contract VAN is ERC20 {
-    constructor() ERC20("Virtual Affiliate Network", "VAN") {
+contract VREF is ERC20 {
+    constructor() ERC20("Virtual Referral Network", "VREF") {
     }
 
-    address VUSD = 0xCD38FD5EdDe2E0009BF7eC41c256985B820ea1C8;
+    address VUSD = 0xbd4082F2df813B762A026e73FAC9007C940f861D;
     bool public status = true; 
     address owner = msg.sender;
     uint public _tokenInPool;
@@ -16,7 +16,7 @@ contract VAN is ERC20 {
     uint public currentStep = 0;
     uint subIDOSold = 0;
     uint[30] icoPrice =[10,20,40,80,160,320,640,1280,2560,5120,10240,20480,40960,81920,163840,327680,655360,1310720,
-    2621440,5242880,10485760,20971520,41943040,83886080,167772160,335544320,671088640,1342177280,2684354560,5368709120];
+    2621440,5242880,10485760,20971520,41943040,83886080,167772160,335544320,671088640,1342177280,2684354560,5368709120]; // * 100 already
     uint[30] tokenBeforeICO = [0,353553390593273762200422,603553390593273762200422,780330085889910643300633,905330085889910643300633,
     993718433538229083850739,1056218433538229083850739,1100412607362388304125792,1131662607362388304125792,1153759694274467914263318,
     1169384694274467914263318,1180433237730507719332081,1188245737730507719332081,1193770009458527621866463,1197676259458527621866463,
@@ -115,7 +115,7 @@ contract VAN is ERC20 {
         uint moneyInpool = (_tokenInPool * _moneyInPool) / (_tokenInPool + amount);
         uint receivedMoney = currentMoney - moneyInpool;
         require(receivedMoney >= expected, "price slippage detected");
-        require(transfer(address(this), amount), "transfer VAN failed");
+        require(transfer(address(this), amount), "transfer VREF failed");
         require(IERC20(VUSD).transfer(msg.sender, receivedMoney/10**12), "transfer VUSD failed");
         _moneyInPool -= receivedMoney;
         _tokenInPool += amount;

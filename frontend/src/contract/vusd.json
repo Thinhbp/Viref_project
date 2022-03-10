@@ -1,5 +1,5 @@
 {
-	"address": "0x09ED3C12DE963BC12E074f6E6d096e802cD7B580",
+	"address": "0xbd4082F2df813B762A026e73FAC9007C940f861D",
 	"abi": [
 		{
 			"inputs": [],
@@ -319,6 +319,11 @@
 					"internalType": "uint256",
 					"name": "_amount",
 					"type": "uint256"
+				},
+				{
+					"internalType": "address",
+					"name": "_address",
+					"type": "address"
 				}
 			],
 			"name": "sellToken",
@@ -413,7 +418,7 @@
 					"type": "address"
 				}
 			],
-			"name": "updateVANAddress",
+			"name": "updateVREFAddress",
 			"outputs": [],
 			"stateMutability": "nonpayable",
 			"type": "function"

@@ -1,5 +1,5 @@
 {
-	"address": "0x83FA61c411e2cc26b761E5d3CBd9C72a727d2D36",
+	"address": "0xeaD75d7d642590346c208237DBC016E5AbcCb329",
 	"abi": [
 		{
 			"inputs": [],
@@ -214,17 +214,15 @@
 			"type": "function"
 		},
 		{
-			"inputs": [],
-			"name": "burnToken",
-			"outputs": [],
-			"stateMutability": "nonpayable",
-			"type": "function"
-		},
-		{
 			"inputs": [
 				{
 					"internalType": "uint256",
 					"name": "amount",
+					"type": "uint256"
+				},
+				{
+					"internalType": "uint256",
+					"name": "expected",
 					"type": "uint256"
 				}
 			],
@@ -270,6 +268,19 @@
 				}
 			],
 			"stateMutability": "view",
+			"type": "function"
+		},
+		{
+			"inputs": [
+				{
+					"internalType": "address",
+					"name": "_address",
+					"type": "address"
+				}
+			],
+			"name": "collectWastedToken",
+			"outputs": [],
+			"stateMutability": "nonpayable",
 			"type": "function"
 		},
 		{
@@ -378,6 +389,11 @@
 					"internalType": "uint256",
 					"name": "amount",
 					"type": "uint256"
+				},
+				{
+					"internalType": "uint256",
+					"name": "expected",
+					"type": "uint256"
 				}
 			],
 			"name": "sellToken",
@@ -390,7 +406,7 @@
 			"name": "state",
 			"outputs": [
 				{
-					"internalType": "enum VAN.statusEnum",
+					"internalType": "enum VREF.statusEnum",
 					"name": "",
 					"type": "uint8"
 				}

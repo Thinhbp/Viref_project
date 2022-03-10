@@ -1,6 +1,6 @@
 export default {
 	methods: {
-		formatVAN(value) {
+		formatVREF(value) {
 	      return web3.utils.fromWei(value.toString());
 	    },
 	    formatMoney(price) {

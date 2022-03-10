@@ -15,7 +15,7 @@
 						:key="tx.transactionHash" :style="{ cursor: 'pointer', color: selected==idx?'red':'black' }" @click="select(idx)">
 						<td style="text-align: left; font-size: 15px">{{ tx.event }}</td>
 						<td style="text-align: left;"><span class="cut-text">{{ tx.data.address }}</span></td>
-						<td style="text-align: right;">{{ formatMoney(formatVAN(tx.data.amount)) }} {{ tx.event=='buy'?'USD':'VAN' }}</td>
+						<td style="text-align: right;">{{ formatMoney(formatVREF(tx.data.amount)) }} {{ tx.event=='buy'?'USD':'VREF' }}</td>
 					</tr>
 				</tbody>
 			</table>
@@ -23,12 +23,12 @@
 	</div>
 </template>
 <script type="text/javascript">
-const van = require("../contract/van.json");
+const vref = require("../contract/vref.json");
 const { EventBus } = require("../helper/eventbus");
 export default {
 	data() {
 		return {
-			VAN: null,
+			VREF: null,
 			transactions: [],
 			selected: -1
 		}
@@ -39,7 +39,7 @@ export default {
 			EventBus.$emit("selectHistory", i);
 		},
 	    getLogsEvent(event) {
-	    	return this.VAN.getPastEvents(event, {
+	    	return this.VREF.getPastEvents(event, {
 			    fromBlock: 0,
 			    toBlock: 'latest'
 			})
@@ -96,7 +96,7 @@ export default {
 			//   });
 			// }).catch(err => console.log("getPastLogs failed", err));
 	    },
-	    formatVAN(value) {
+	    formatVREF(value) {
 	      return web3.utils.fromWei(value.toString());
 	    },
 	    formatMoney(price) {
@@ -105,7 +105,7 @@ export default {
 	    },
 	},
 	mounted() {
-		this.VAN = new web3.eth.Contract(van.abi, van.address);
+		this.VREF = new web3.eth.Contract(vref.abi, vref.address);
 		this.getLogs().then(res => {
 			EventBus.$emit("historyTrans", this.transactions)
 		});

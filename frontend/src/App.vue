@@ -10,8 +10,8 @@
         </div>
         <div :style="{display: tab=='contract'?'block':'none'}">
           <usdc :accounts="accounts" :extra="[vusdMetadata.address]" />
-          <vusd :accounts="accounts" :extra="[vanMetadata.address]" />
-          <van :accounts="accounts" :extra="[vanMetadata.address]" />
+          <vusd :accounts="accounts" :extra="[vrefMetadata.address]" />
+          <vref :accounts="accounts" :extra="[vrefMetadata.address]" />
         </div>
         <div :style="{display: tab=='history'?'block':'none'}">
           <history />
@@ -39,27 +39,27 @@ const WalletConnectProvider = require("@walletconnect/web3-provider").default;
 
 const usdc = require("./views/usdc").default;
 const vusd = require("./views/vusd").default;
-const van = require("./views/van").default;
+const vref = require("./views/vref").default;
 const chart = require("./views/chart").default;
 const history = require("./views/history").default;
 const chainSelection = require("./components/ChainSelection.vue").default;
 
 const vusdMetadata = require("./contract/vusd.json");
 const usdcMetadata = require("./contract/usdc.json");
-const vanMetadata = require("./contract/van.json");
+const vrefMetadata = require("./contract/vref.json");
 
 const helper = require("./helper").default;
 
 import './views/grid.css';
 
 export default {
-  components: { usdc, vusd, van, chart, history, chainSelection },
+  components: { usdc, vusd, vref, chart, history, chainSelection },
   data() {
     return {
       accounts: null,
       loading: true,
       vusdMetadata,
-      vanMetadata,
+      vrefMetadata,
       tab: 'contract',
       web3Modal: null,
       networkId: null
