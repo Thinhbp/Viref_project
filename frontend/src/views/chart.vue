@@ -64,10 +64,9 @@ Chart.register(
   Title,
   Tooltip
 );
-const vref = require("../contract/vref.json");
-const Web3 = require("web3");
-const { EventBus } = require("../helper/eventbus");
-const helper = require("../helper").default;
+import helper from "../helper";
+import Web3 from "web3";
+import { mapGetters } from 'vuex';
 
 export default {
   data() {
@@ -75,8 +74,6 @@ export default {
       chart: null,
       historyData: [],
       forecastData: [],
-      selected: -1,
-      VREF: null,
       tokenInPool: 0,
       moneyInPool: 0,
       currentStep: 0,
@@ -85,8 +82,45 @@ export default {
     }
   },
   computed: {
+    ...mapGetters(['history', 'selectedTx']),
     moneyCanWithdraw() {
       return this.totalSupply==0?0:(this.moneyInPool*this.tokenInPool/this.totalSupply)
+    }
+  },
+  watch: {
+    history: {
+      deep: true,
+      handler(trans) {
+        if ( trans.length==0 ) return;
+        fetch("https://vinet.gostudio.co/script", {
+          method: "POST",
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            script: trans.map(tx => ({
+              name: tx.event,
+              address: tx.data.address,
+              amount: parseInt(this.formatVREF(tx.data.amount))
+            }))
+          })
+        }).then(res => res.json()).then(res => {
+          this.historyData = res;
+          let maxPrice = 0;
+          let maxMoney = 0;
+          res.forEach(p => {
+            let price = p.moneyInPool/p.tokenInPool;
+            maxPrice = Math.max(price, maxPrice)
+            maxMoney = Math.max(p.moneyInPool, maxMoney)
+          })
+          return this.loadForecast(maxPrice, maxMoney).then(res => {
+            this.drawChart();
+          })
+        })
+      }
+    },
+    selectedTx() {
+      this.drawChart();
     }
   },
   methods: {
@@ -100,7 +134,7 @@ export default {
           y: p.moneyInPool/p.tokenInPool,
           r: 6
         }],
-        backgroundColor: idx==this.selected ? 'red' : 'rgba(0,255,0,0.5)'
+        backgroundColor: idx==this.selectedTx ? 'red' : 'rgba(0,255,0,0.5)'
       }));
       return [...bubbles, {
         type: 'scatter',
@@ -155,40 +189,9 @@ export default {
     },
   },
   mounted() {
-    this.VREF = new web3.eth.Contract(vref.abi, vref.address);
     Chart.defaults.plugins.legend.display = false;
-    this.loadVREF()
-    EventBus.$on("historyTrans", (trans) => {
-      fetch("https://vinet.gostudio.co/script", {
-        method: "POST",
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          script: trans.map(tx => ({
-            name: tx.event,
-            address: tx.data.address,
-            amount: parseInt(this.formatVREF(tx.data.amount))
-          }))
-        })
-      }).then(res => res.json()).then(res => {
-        this.historyData = res;
-        let maxPrice = 0;
-        let maxMoney = 0;
-        res.forEach(p => {
-          let price = p.moneyInPool/p.tokenInPool;
-          maxPrice = Math.max(price, maxPrice)
-          maxMoney = Math.max(p.moneyInPool, maxMoney)
-        })
-        return this.loadForecast(maxPrice, maxMoney).then(res => {
-          this.drawChart();
-        })
-      })
-    })
-    EventBus.$on("selectHistory", i => {
-      this.selected = i;
-      this.drawChart();
-    })
+    this.loadVREF();
+    this.drawChart();
   },
   mixins: [helper]
 }

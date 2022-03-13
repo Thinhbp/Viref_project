@@ -1,6 +1,7 @@
 <template>
   <div id="app" class="bootstrap-wrapper">
-    <div v-if="isConnected && isRopstenNetwork" class="row">
+    <button v-if="!isConnected" @click="connectWallet" class="btn-primary">Connect Wallet</button>
+    <div v-if="isConnected && isRightNetwork" class="row">
       <div class="col-sm-12 col-md-4">
         <div class="tabs">
           <div class="tab-item" :class="{active: tab=='contract'}" @click="tab='contract'">Contracts</div>
@@ -9,9 +10,9 @@
           
         </div>
         <div :style="{display: tab=='contract'?'block':'none'}">
-          <usdc :accounts="accounts" :extra="[vusdMetadata.address]" />
-          <vusd :accounts="accounts" :extra="[vrefMetadata.address]" />
-          <vref :accounts="accounts" :extra="[vrefMetadata.address]" />
+          <usdc :accounts="accounts" :extra="[vusd.address]" />
+          <vusd :accounts="accounts" :extra="[vref.address]" />
+          <vref :accounts="accounts" :extra="[vref.address]" />
         </div>
         <div :style="{display: tab=='history'?'block':'none'}">
           <history />
@@ -21,8 +22,7 @@
         <chart />
       </div>
     </div>
-    <button v-if="!isConnected" @click="connectWallet" class="btn-primary">Connect Wallet</button>
-    <div v-if="isConnected && !isRopstenNetwork">
+    <div v-if="isConnected && !isRightNetwork">
       <chain-selection :network-id="networkId" />
     </div>
     <!-- <div id="nav">
@@ -33,22 +33,21 @@
   </div>
 </template>
 <script>
-const Web3 = require("web3");
-const Web3Modal = require("web3modal").default;
-const WalletConnectProvider = require("@walletconnect/web3-provider").default;
 
-const usdc = require("./views/usdc").default;
-const vusd = require("./views/vusd").default;
-const vref = require("./views/vref").default;
-const chart = require("./views/chart").default;
-const history = require("./views/history").default;
-const chainSelection = require("./components/ChainSelection.vue").default;
+import Web3 from "web3";
+import Web3Modal from "web3modal";
+import WalletConnectProvider from "@walletconnect/web3-provider";
 
-const vusdMetadata = require("./contract/vusd.json");
-const usdcMetadata = require("./contract/usdc.json");
-const vrefMetadata = require("./contract/vref.json");
+import usdc from "./views/usdc";
+import vusd from "./views/vusd";
+import vref from "./views/vref";
+import chart from "./views/chart";
+import history from "./views/history";
+import chainSelection from "./components/ChainSelection";
+import { chains } from "./constants/constantNetwork";
 
-const helper = require("./helper").default;
+import helper from "./helper";
+import { mapMutations } from 'vuex'
 
 import './views/grid.css';
 
@@ -58,8 +57,6 @@ export default {
     return {
       accounts: null,
       loading: true,
-      vusdMetadata,
-      vrefMetadata,
       tab: 'contract',
       web3Modal: null,
       networkId: null
@@ -70,15 +67,13 @@ export default {
       const cachedProviderName = JSON.parse(localStorage.getItem("WEB3_CONNECT_CACHED_PROVIDER"));
       return this.accounts && this.accounts.length && cachedProviderName;
     },
-    isRopstenNetwork() {
-      return this.networkId == 3
+    isRightNetwork() {
+      return this.usdc && this.usdc.address;
     }
   },
   methods: {
+    ...mapMutations(['setChainId']),
     async connectWallet() {
-      // if (window.ethereum) {
-        // await window.ethereum.request({method: 'eth_requestAccounts'});
-        // window.web3 = new Web3(window.ethereum);
         const providerOptions = {
           walletconnect: {
             package: WalletConnectProvider, // required
@@ -100,12 +95,16 @@ export default {
           return;
         }
         window.web3 = new Web3(provider);
-        this.getAccounts().then(accounts => {
+        this.networkId = await this.getCurrentNetwork();
+        this.setChainId(this.networkId);
+        return this.getAccounts().then(accounts => {
           this.accounts = accounts;
+          this.connectContract();
+          ethereum.on("chainChanged", () => {
+            window.location.reload();
+          });
+          return true;
         })
-        return true;
-      // }
-      // return false;
     },
     async disconnectWallet() {
       await this.web3Modal.clearCachedProvider();
@@ -120,20 +119,15 @@ export default {
       const { ethereum } = window;
       if (ethereum && ethereum.isMetaMask) {
         console.log('Ethereum successfully detected!');
-        // Access the decentralized web!
       } else {
         console.log('Please install MetaMask!');
       }
-    },
-    async getCurrentNetwork() {
-      const id = await web3.eth.net.getId()
-      this.networkId = id
-    },
+    }
   },
   mounted() {
     if ( window.ethereum ) {
       this.getAccounts().then(accounts => {
-        if ( accounts.length )
+        if ( accounts.length ) 
           return this.connectWallet();
       }).catch(e => console.log(e)).finally(e => {
         this.loading = false;
@@ -147,10 +141,6 @@ export default {
       // the user probably doesn't have MetaMask installed.
       setTimeout(this.detectEthereum, 3000); // 3 seconds
     }
-  },
-  updated() {
-    this.getCurrentNetwork()
-    this.onChainChanged()
   },
   mixins: [helper]
 }

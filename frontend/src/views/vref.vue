@@ -20,20 +20,19 @@
 	</div>
 </template>
 <script type="text/javascript">
-const vusd = require("../contract/vusd.json");
-const usdc = require("../contract/usdc.json");
-const vref = require("../contract/vref.json");
-const helper = require("../helper").default;
+import helper from "../helper";
+
 export default {
 	props: ['accounts', 'extra'],
 	data() {
 		return {
-			VUSD: null,
-			USDC: null,
-			VREF: null,
 			balances: [],
-			loading: false,
-			address: vref.address
+			loading: false
+		}
+	},
+	computed: {
+		address() {
+			return this.vref.address
 		}
 	},
 	methods: {
@@ -42,9 +41,9 @@ export default {
 			if ( !amount ) return;
 			this.loading = true;
 			amount = parseFloat(amount) * 10**6;
-			let approved = await this.VUSD.methods.allowance(from, vref.address).call({ from });
+			let approved = await this.VUSD.methods.allowance(from, this.address).call({ from });
 			if ( !approved || parseFloat(approved)<amount ) {
-				let approve = await this.VUSD.methods.approve(vref.address, amount).send({ from });
+				let approve = await this.VUSD.methods.approve(this.address, amount).send({ from });
 				if ( !approve || !approve.status ) {
 					this.loading = false;
 					this.error = "Contract cannot access your money";
@@ -87,9 +86,6 @@ export default {
 	    }
 	},
 	mounted() {
-		this.VUSD = new web3.eth.Contract(vusd.abi, vusd.address);
-		// this.USDC = new web3.eth.Contract(usdc.abi, usdc.address);
-		this.VREF = new web3.eth.Contract(vref.abi, vref.address);
 		this.balances = [...this.accounts, ...this.extra].map(acc => ({
 			address: acc,
 			balance: 0,

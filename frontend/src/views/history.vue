@@ -12,7 +12,7 @@
 				</thead>
 				<tbody>
 					<tr v-for="(tx,idx) in transactions" 
-						:key="tx.transactionHash" :style="{ cursor: 'pointer', color: selected==idx?'red':'black' }" @click="select(idx)">
+						:key="tx.transactionHash" :style="{ cursor: 'pointer', color: selectedTx==idx?'red':'black' }" @click="select(idx)">
 						<td style="text-align: left; font-size: 15px">{{ tx.event }}</td>
 						<td style="text-align: left;"><span class="cut-text">{{ tx.data.address }}</span></td>
 						<td style="text-align: right;">{{ formatMoney(formatVREF(tx.data.amount)) }} {{ tx.event=='buy'?'USD':'VREF' }}</td>
@@ -23,24 +23,27 @@
 	</div>
 </template>
 <script type="text/javascript">
-const vref = require("../contract/vref.json");
-const { EventBus } = require("../helper/eventbus");
+import helper from "../helper";
+import { mapMutations, mapGetters } from 'vuex';
+
 export default {
 	data() {
 		return {
-			VREF: null,
-			transactions: [],
-			selected: -1
+			transactions: []
 		}
 	},
+	computed: {
+		...mapGetters([ 'selectedTx' ])
+	},
 	methods: {
+		...mapMutations([ 'setHistory', 'setSelectedTx' ]),
 		select(i) {
-			this.selected = i;
-			EventBus.$emit("selectHistory", i);
+			this.setSelectedTx(i);
 		},
-	    getLogsEvent(event) {
+	    async getLogsEvent(event) {
+	    	let currentBlock = await web3.eth.getBlockNumber()
 	    	return this.VREF.getPastEvents(event, {
-			    fromBlock: 0,
+			    fromBlock: currentBlock-5000,
 			    toBlock: 'latest'
 			})
 		    .then(results => {
@@ -68,6 +71,7 @@ export default {
 				  	return 1;
 				});
 				this.transactions = txs;
+				this.setHistory(txs);
 				return true;
 	    	})
 
@@ -95,21 +99,12 @@ export default {
 			//     })
 			//   });
 			// }).catch(err => console.log("getPastLogs failed", err));
-	    },
-	    formatVREF(value) {
-	      return web3.utils.fromWei(value.toString());
-	    },
-	    formatMoney(price) {
-	    	let dollarUSLocale = Intl.NumberFormat('en-US');
-	    	return dollarUSLocale.format(price)
-	    },
+	    }
 	},
 	mounted() {
-		this.VREF = new web3.eth.Contract(vref.abi, vref.address);
-		this.getLogs().then(res => {
-			EventBus.$emit("historyTrans", this.transactions)
-		});
-	}
+		this.getLogs();
+	},
+	mixins: [helper]
 }
 </script>
 <style scoped>

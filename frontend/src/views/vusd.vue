@@ -20,17 +20,18 @@
 	</div>
 </template>
 <script type="text/javascript">
-const vusd = require("../contract/vusd.json");
-const usdc = require("../contract/usdc.json");
-const helper = require("../helper").default;
+import helper from "../helper";
 export default {
 	props: ['accounts', 'extra'],
 	data() {
 		return {
-			VUSD: null,
 			balances: [],
-			loading: false,
-			address: vusd.address
+			loading: false
+		}
+	},
+	computed: {
+		address() {
+			return this.vusd.address
 		}
 	},
 	methods: {
@@ -39,9 +40,9 @@ export default {
 			if ( !amount ) return;
 			this.loading = true;
 			amount = this.convertTokenValue(amount);
-			let approved = await this.USDC.methods.allowance(from, vusd.address).call({ from });
+			let approved = await this.USDC.methods.allowance(from, this.address).call({ from });
 			if ( !approved || parseFloat(approved)<amount ) {
-				let approve = await this.USDC.methods.approve(vusd.address, amount).send({ from });
+				let approve = await this.USDC.methods.approve(this.address, amount).send({ from });
 				if ( !approve || !approve.status ) {
 					this.loading = false;
 					this.error = "Contract cannot access your money";
@@ -76,8 +77,6 @@ export default {
 	    }
 	},
 	mounted() {
-		this.VUSD = new web3.eth.Contract(vusd.abi, vusd.address);
-		this.USDC = new web3.eth.Contract(usdc.abi, usdc.address);
 		this.balances = [...this.accounts, ...this.extra].map(acc => ({
 			address: acc,
 			balance: 0,

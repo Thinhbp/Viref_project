@@ -1,37 +1,23 @@
 <template>
   <div class="chain-selection">
-    <p>
-      <span v-if="networkNameHandler"
-        >The current network is:
-        <span
-          ><strong>{{ networkNameHandler }}</strong></span
-        ></span
-      >
+    <p>Your current blockchain network is not supported. Please switch to one of these networks.</p>
+    <p v-for="net,name in supportedNetworks">
+      <button class="btn-submit" @click="switchNetworkHandler(net.id)">
+        Switch to {{ name }}
+      </button>
     </p>
-    <!-- <select class="select-box" @change="optionHandler">
-      <option value="ethereum">Ethereum Main Network (Mainnet)</option>
-      <option value="ropsten">Ropsten Test Network</option>
-      <option value="rinkeby">Rinkeby Test Network</option>
-      <option value="goerli">Goerli Test Network</option>
-      <option value="kovan">Kovan Test Network</option>
-    </select> -->
-    <button class="btn-submit" @click="switchToRopstenHandler">
-      Switch to Ropsten Test Network
-    </button>
   </div>
 </template>
 
 <script>
-const { networkName } = require("../constants/constantNetwork")
-
-const helper = require("../helper").default;
+import { chains } from "../constants/constantNetwork";
+import helper from "../helper";
+import { mapGetters } from 'vuex';
 
 export default {
   data() {
     return {
-      networkName: networkName,
       chainId: null,
-      isNetworkNameShown: true,
     };
   },
   props: {
@@ -40,29 +26,15 @@ export default {
     },
   },
   computed:{
-    networkNameHandler() {
-      return Object.keys(networkName).find((key) => networkName[key] === this.networkId);
-    }
+    ...mapGetters(['supportedNetworks']),
   },
   methods: {
-    // optionHandler(event) {
-    //   this.option = event.target.value;
-    // },
-    // Function to get hex value of corresponding network
-    // getHexValue() {
-    //   Object.keys(chainId).find((key) => {
-    //       if(key == this.option) {
-    //         this.chainId = chainId[key]
-    //       }
-    //   });
-    // },
-    async switchToRopstenHandler() {
+    async switchNetworkHandler(chainId) {
       try {
         await ethereum.request({
           method: "wallet_switchEthereumChain",
-          params: [{ chainId: "0x3" }],
+          params: [{ chainId: "0x"+chainId.toString(16) }],
         });
-        this.onChainChanged()
       } catch (error) {
         console.log(error);
       }

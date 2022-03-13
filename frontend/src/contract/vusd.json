@@ -1,5 +1,8 @@
 {
-	"address": "0x3c33BF198Ef913AE1C72f7ccf86d71DCB54B977b",
+	"address": {
+		"ropsten": "0x3c33BF198Ef913AE1C72f7ccf86d71DCB54B977b",
+		"bsc": "0x7776c595B8Ee60a03cFd6dF1562Bc5c80810F4B8"
+	},
 	"abi": [
 		{
 			"inputs": [],

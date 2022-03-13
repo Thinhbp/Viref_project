@@ -20,16 +20,19 @@
 	</div>
 </template>
 <script type="text/javascript">
-const usdc = require("../contract/usdc.json");
-const helper = require("../helper").default;
+import helper from "../helper";
+
 export default {
 	props: ['accounts', 'extra'],
 	data() {
 		return {
-			USDC: null,
 			balances: [],
-			loading: false,
-			address: usdc.address
+			loading: false
+		}
+	},
+	computed: {
+		address() {
+			return this.usdc.address
 		}
 	},
 	methods: {
@@ -51,7 +54,6 @@ export default {
 	    }
 	},
 	mounted() {
-		this.USDC = new web3.eth.Contract(usdc.abi, usdc.address);
 		this.balances = [...this.accounts, ...this.extra].map(acc => ({
 			address: acc,
 			balance: 0,
