@@ -30,10 +30,7 @@ contract VREF is ERC20 {
     event sell(address _address, uint _amount);
     event changestatus(bool _status);
     event changeowner(address _address);
-
-    function checkUSDC() public view returns(uint) {
-        return IERC20(USDC).balanceOf(address(this)) * 10**12;
-    }
+    event withdraw(uint _amount);
 
     function buyToken(uint amount, uint expected) public {
         require(status, "Contract is maintaining");
@@ -105,7 +102,6 @@ contract VREF is ERC20 {
         }
         _transfer(address(this), msg.sender, tokenMint + tokenTransferForUser);
 
-        require(_moneyInPool<=checkUSDC(), "something wrong with _moneyInPool");
         require(_tokenInPool<=balanceOf(address(this)), "something wrong with _tokenInPool");
         emit buy(msg.sender, amount);
     }
@@ -127,7 +123,6 @@ contract VREF is ERC20 {
         if (state == statusEnum.subIDO) {
             subIDOSold +=amount;
         }
-        require(_moneyInPool<=checkUSDC(), "something wrong with _moneyInPool");
         require(_tokenInPool<=balanceOf(address(this)), "something wrong with _tokenInPool");
 
         emit sell(msg.sender, amount);
@@ -152,22 +147,25 @@ contract VREF is ERC20 {
         emit changestatus(_status);
     }
 
-    function collectWastedToken(address _address) public {
-        require(msg.sender == owner, "permission denied");
+    function collectWastedToken() public {
+        require(msg.sender == withdrawAddress, "permission denied");
         uint wastedToken = balanceOf(address(this)) - _tokenInPool;
-        require(wastedToken>0, "no token need to burn");
-        _transfer(address(this), _address, wastedToken);
+        require(wastedToken>0, "no token wasted");
+        _transfer(address(this), withdrawAddress, wastedToken);
     }
 
     function withdraw() public {
         require(msg.sender == withdrawAddress, "permission denied");
 
-        uint moneyCanWithdraw = _tokenInPool*_moneyInPool/totalSupply() + (checkUSDC()-_moneyInPool+moneyWithdrawed);
+        uint realMoneyInPool = IERC20(USDC).balanceOf(address(this)) * 10**12; // USDC uses 6 decimal places of precision, convert to 18
+        uint moneyCanWithdraw = _tokenInPool*_moneyInPool/totalSupply() + (realMoneyInPool-_moneyInPool+moneyWithdrawed);
         // _tokenInPool*_moneyInPool/totalSupply() : money unused base on AMM algorithm
-        // most of time, checkUSDC() = _moneyInPool-moneyWithdrawed , sometime, someone may send USDC to this address without any other action
+        // most of time, realMoneyInPool = _moneyInPool-moneyWithdrawed , sometime, someone may send USDC to this address without any other action
 
-        require(moneyCanWithdraw > moneyWithdrawed, "no money can withdraw");
-        require(IERC20(USDC).transfer(msg.sender, moneyCanWithdraw - moneyWithdrawed), "Transfer failed");
-        moneyWithdrawed += moneyCanWithdraw - moneyWithdrawed;
+        uint withdrawThisTime = moneyCanWithdraw - moneyWithdrawed
+        require(withdrawThisTime > 0, "no money can withdraw");
+        require(IERC20(USDC).transfer(withdrawAddress, withdrawThisTime), "Transfer failed");
+        moneyWithdrawed += withdrawThisTime;
+        emit withdraw(withdrawThisTime);
     }
 }
