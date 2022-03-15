@@ -158,14 +158,14 @@ contract VREF is ERC20 {
         require(msg.sender == withdrawAddress, "permission denied");
 
         uint realMoneyInPool = IERC20(USDC).balanceOf(address(this)) * 10**12; // USDC uses 6 decimal places of precision, convert to 18
-        uint moneyCanWithdraw = (_tokenInPool*_moneyInPool/totalSupply() + (moneyWithdrawed + realMoneyInPool-_moneyInPool));
+        uint moneyCanWithdraw = _tokenInPool*_moneyInPool/totalSupply() + realMoneyInPool+moneyWithdrawed-_moneyInPool;
         // _tokenInPool*_moneyInPool/totalSupply() : money unused base on AMM algorithm
         // most of time, realMoneyInPool = _moneyInPool-moneyWithdrawed , sometime, someone may send USDC to this address without any other action
 
-        uint withdrawThisTime = moneyCanWithdraw - moneyWithdrawed ;
+        uint withdrawThisTime = (moneyCanWithdraw - moneyWithdrawed) / 10**12;
         require(withdrawThisTime > 0, "no money can withdraw");
-        require(IERC20(USDC).transfer(withdrawAddress, withdrawThisTime  / 10 ** 12 , "Transfer failed");
-        moneyWithdrawed += withdrawThisTime;
+        require(IERC20(USDC).transfer(withdrawAddress, withdrawThisTime, "Transfer failed");
+        moneyWithdrawed += withdrawThisTime * 10**12;
         emit withdraw(withdrawThisTime);
     }
 }
