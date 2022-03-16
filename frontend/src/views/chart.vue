@@ -3,7 +3,7 @@
     <div class="currentInfo">
       <p>Token in Pool : {{ formatMoney(tokenInPool) }} VREF</p>
       <p>Money in Pool : {{ formatMoney(moneyInPool) }} USDC</p>
-      <p>Current Price : {{ tokenInPool==0?0:formatMoney(moneyInPool/tokenInPool) }} USDC/VREF</p>
+      <p>Current Price : {{ tokenInPool==0?0:(moneyInPool/tokenInPool).toString().slice(0, 5) }} USDC/VREF</p>
       <p>Total supply : {{ formatMoney(totalSupply) }} VREF</p>
       <p>Money can withdraw : {{ formatMoney(moneyCanWithdraw) }} USDC</p>
       <p>Current step : {{ currentStep }}</p>

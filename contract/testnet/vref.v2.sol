@@ -164,7 +164,7 @@ contract VREF is ERC20 {
 
         uint withdrawThisTime = (moneyCanWithdraw - moneyWithdrawed) / 10**12;
         require(withdrawThisTime > 0, "no money can withdraw");
-        require(IERC20(USDC).transfer(withdrawAddress, withdrawThisTime, "Transfer failed");
+        require(IERC20(USDC).transfer(withdrawAddress, withdrawThisTime), "Transfer failed");
         moneyWithdrawed += withdrawThisTime * 10**12;
         emit withdraw(withdrawThisTime);
     }
