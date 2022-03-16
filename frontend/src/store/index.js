@@ -1,10 +1,9 @@
 import Vue from 'vue';
 import Vuex from 'vuex';
 const usdc = require("../contract/usdc.json");
-const vusd = require("../contract/vusd.json");
 const vref = require("../contract/vref.json");
 import { chains } from '../constants/constantNetwork';
-const contracts = { usdc, vusd, vref };
+const contracts = { usdc, vref };
 
 Vue.use(Vuex)
 

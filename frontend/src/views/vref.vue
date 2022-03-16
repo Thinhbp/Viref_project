@@ -1,6 +1,6 @@
 <template>
 	<div>
-		<h2>VREF <span class="loading" v-if="loading">Loading...</span><div class="subtitle">{{ address }}</div></h2>
+		<h2>VREF <span class="loading" v-if="loading">Loading...</span><div class="subtitle">{{ vref.address }}</div></h2>
 		<table border="1" cellpadding="10" >
 			<thead>
 				<tr>
@@ -13,7 +13,8 @@
 				<tr v-for="acc in balances">
 					<td style="text-align: left; font-size: 15px"><span class="cut-text">{{ acc.address }}</span></td>
 					<td style="text-align: right;">{{ formatMoney(formatVREF(acc.balance)) }}</td>
-					<td><button v-if="acc.mine" :disabled="loading" @click="buyToken(acc.address)">Buy</button> <button v-if="acc.mine" :disabled="loading" @click="sellToken(acc.address)">Sell</button></td>
+					<td>
+						<button v-if="acc.mine" :disabled="loading" @click="buyToken(acc.address)">Buy</button> <button v-if="acc.mine" :disabled="loading" @click="sellToken(acc.address)">Sell</button></td>
 				</tr>
 			</tbody>
 		</table>
@@ -30,20 +31,15 @@ export default {
 			loading: false
 		}
 	},
-	computed: {
-		address() {
-			return this.vref.address
-		}
-	},
 	methods: {
 		async buyToken(from) {
-			let amount = window.prompt("How much VUSD do you want to pay to buy VREF ?","10");
+			let amount = window.prompt("How much USDC do you want to pay to buy VREF ?","10");
 			if ( !amount ) return;
 			this.loading = true;
 			amount = parseFloat(amount) * 10**6;
-			let approved = await this.VUSD.methods.allowance(from, this.address).call({ from });
+			let approved = await this.USDC.methods.allowance(from, this.vref.address).call({ from });
 			if ( !approved || parseFloat(approved)<amount ) {
-				let approve = await this.VUSD.methods.approve(this.address, amount).send({ from });
+				let approve = await this.USDC.methods.approve(this.vref.address, amount).send({ from });
 				if ( !approve || !approve.status ) {
 					this.loading = false;
 					this.error = "Contract cannot access your money";
@@ -62,9 +58,9 @@ export default {
 			if ( !amount ) return;
 			this.loading = true;
 			amount = BigInt(parseFloat(amount) * 10**18).toString();
-			let approved = await this.VREF.methods.allowance(from, vref.address).call({ from });
+			let approved = await this.VREF.methods.allowance(from, this.vref.address).call({ from });
 			if ( !approved || parseFloat(approved)<amount ) {
-				let approve = await this.VREF.methods.approve(vref.address, amount).send({ from });
+				let approve = await this.VREF.methods.approve(this.vref.address, amount).send({ from });
 				if ( !approve || !approve.status ) {
 					this.loading = false;
 					this.error = "Contract cannot access your money";

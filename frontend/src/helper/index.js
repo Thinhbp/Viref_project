@@ -4,7 +4,6 @@ export default {
 	data() {
 		return {
 			USDC: null,
-			VUSD: null,
 			VREF: null,
 		}
 	},
@@ -12,9 +11,6 @@ export default {
 		...mapGetters([
 			'getABI'
 		]),
-		vusd() {
-			return this.getABI('vusd')
-		},
 		usdc() {
 			return this.getABI('usdc')
 		},
@@ -40,7 +36,6 @@ export default {
 			if ( !window.web3.eth || !this.usdc ) return false;
 	        if ( !window.USDC ) {
 				window.USDC = this.contract('usdc');
-				window.VUSD = this.contract('vusd');
 				window.VREF = this.contract('vref');
 	        }
 		},
@@ -56,7 +51,6 @@ export default {
 	},
 	mounted() {
 		this.USDC = window.USDC;
-		this.VUSD = window.VUSD;
 		this.VREF = window.VREF;
 	}
 }

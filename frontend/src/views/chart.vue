@@ -2,10 +2,10 @@
   <div><canvas ref="myChart" style="width: 100%;"></canvas>
     <div class="currentInfo">
       <p>Token in Pool : {{ formatMoney(tokenInPool) }} VREF</p>
-      <p>Money in Pool : {{ formatMoney(moneyInPool) }} VUSD</p>
-      <p>Current Price : {{ tokenInPool==0?0:formatMoney(moneyInPool/tokenInPool) }} VUSD/VREF</p>
+      <p>Money in Pool : {{ formatMoney(moneyInPool) }} USDC</p>
+      <p>Current Price : {{ tokenInPool==0?0:formatMoney(moneyInPool/tokenInPool) }} USDC/VREF</p>
       <p>Total supply : {{ formatMoney(totalSupply) }} VREF</p>
-      <p>Money can withdraw : {{ formatMoney(moneyCanWithdraw) }} VUSD</p>
+      <p>Money can withdraw : {{ formatMoney(moneyCanWithdraw) }} USDC</p>
       <p>Current step : {{ currentStep }}</p>
       <p>In active : {{ active }}</p>
     </div>

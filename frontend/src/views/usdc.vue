@@ -1,6 +1,6 @@
 <template>
 	<div>
-		<h2>USDC <span class="loading" v-if="loading">Loading...</span><div class="subtitle">{{ address }}</div></h2>
+		<h2>USDC <span class="loading" v-if="loading">Loading...</span><div class="subtitle">{{ usdc.address }}</div></h2>
 		<table border="1" cellpadding="10">
 			<thead>
 				<tr>
@@ -28,11 +28,6 @@ export default {
 		return {
 			balances: [],
 			loading: false
-		}
-	},
-	computed: {
-		address() {
-			return this.usdc.address
 		}
 	},
 	methods: {

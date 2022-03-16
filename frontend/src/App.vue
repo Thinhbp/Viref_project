@@ -10,8 +10,7 @@
           
         </div>
         <div :style="{display: tab=='contract'?'block':'none'}">
-          <usdc :accounts="accounts" :extra="[vusd.address]" />
-          <vusd :accounts="accounts" :extra="[vref.address]" />
+          <usdc :accounts="accounts" :extra="[vref.address]" />
           <vref :accounts="accounts" :extra="[vref.address]" />
         </div>
         <div :style="{display: tab=='history'?'block':'none'}">
@@ -39,7 +38,6 @@ import Web3Modal from "web3modal";
 import WalletConnectProvider from "@walletconnect/web3-provider";
 
 import usdc from "./views/usdc";
-import vusd from "./views/vusd";
 import vref from "./views/vref";
 import chart from "./views/chart";
 import history from "./views/history";
@@ -52,7 +50,7 @@ import { mapMutations } from 'vuex'
 import './views/grid.css';
 
 export default {
-  components: { usdc, vusd, vref, chart, history, chainSelection },
+  components: { usdc, vref, chart, history, chainSelection },
   data() {
     return {
       accounts: null,
