@@ -43,7 +43,7 @@ export default {
 
             if (assumingToken>nextBreak) {
                 buyNowCost = state == this.statusEnum.ICO ?
-                                    buyNowToken * BigInt(icoPrice[currentStep])/BigInt(100) :
+                                    buyNowToken * BigInt(this.icoPrice[currentStep])/BigInt(100) :
                                     ((_tokenInPool * _moneyInPool)/(_tokenInPool - buyNowToken) - _moneyInPool);
             }
             _moneyInPool += buyNowCost;
