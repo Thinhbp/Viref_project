@@ -18,13 +18,17 @@
 				</tr>
 			</tbody>
 		</table>
+		<exchange v-if="balances.length" :address="balances[0].address" 
+			@sell="(values) => sellToken(balances[0].address, values)" @buy="(values) => buyToken(balances[0].address, values)" />
 	</div>
 </template>
 <script type="text/javascript">
 import helper from "../helper";
+import Exchange from "./exchange";
 
 export default {
 	props: ['accounts', 'extra'],
+	components: { Exchange },
 	data() {
 		return {
 			balances: [],
@@ -32,8 +36,8 @@ export default {
 		}
 	},
 	methods: {
-		async buyToken(from) {
-			let amount = window.prompt("How much USDC do you want to pay to buy VREF ?","10");
+		async buyToken(from, values) {
+			let amount = window.prompt("How much USDC do you want to pay to buy VREF ?", values[0]?values[0]:10);
 			if ( !amount ) return;
 			this.loading = true;
 			amount = parseFloat(amount) * 10**6;
@@ -46,15 +50,17 @@ export default {
 					return false;
 				}
 			}
-	        this.VREF.methods.buyToken(amount, 0).send({ from }).then(result => {
+	        this.VREF.methods.buyToken(amount, values[1]?values[1]:0).send({ from }).then(result => {
 	        	let status = result.status;
 	        	if ( status ) window.location.reload();
 	        }).finally(e => {
 	        	this.loading = false;
 	        });
 	    },
-		async sellToken(from) {
-			let amount = window.prompt("How much VREF do you want to sell ?","10");
+		async sellToken(from, values) {
+			if ( !values ) values = [];
+			console.log({values})
+			let amount = window.prompt("How much VREF do you want to sell ?", values[0]?values[0]:10);
 			if ( !amount ) return;
 			this.loading = true;
 			amount = BigInt(parseFloat(amount) * 10**18).toString();
@@ -68,7 +74,7 @@ export default {
 				}
 			}
 
-	        this.VREF.methods.sellToken(amount, 0).send({ from }).then(result => {
+	        this.VREF.methods.sellToken(amount, values[1]?values[1]:0).send({ from }).then(result => {
 	        	let status = result.status;
 	        	if ( status ) window.location.reload();
 	        }).finally(e => {

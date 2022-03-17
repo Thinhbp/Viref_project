@@ -1,5 +1,5 @@
 <template>
-  <div><canvas ref="myChart" style="width: 100%;"></canvas>
+  <div style="width: 96%;"><canvas ref="myChart" style="width: 96%;"></canvas>
     <div class="currentInfo">
       <p>Token in Pool : {{ formatMoney(tokenInPool) }} VREF</p>
       <p>Money in Pool : {{ formatMoney(moneyInPool) }} USDC</p>
@@ -109,7 +109,7 @@ export default {
           let maxPrice = 0;
           let maxMoney = 0;
           res.forEach(p => {
-            let price = p.moneyInPool/p.tokenInPool;
+            let price = p.tokenInPool==0 ? 0 : p.moneyInPool/p.tokenInPool;
             maxPrice = Math.max(price, maxPrice)
             maxMoney = Math.max(p.moneyInPool, maxMoney)
           })

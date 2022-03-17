@@ -1,6 +1,7 @@
 {
 	"address": {
 		"ropsten": "0x5667D599462e0FB0B04e33DEb30971761f1360C4",
+		"rinkeby": "0xB8e60ec028987940A6FfB017A208bb9f9725b6aE",
 		"bsc": "0x95E4cDd2Df8572920c889B65085ea4B61922560c"
 	},
 	"abi": [
@@ -186,13 +187,7 @@
 			"type": "function"
 		},
 		{
-			"inputs": [
-				{
-					"internalType": "address",
-					"name": "_address",
-					"type": "address"
-				}
-			],
+			"inputs": [],
 			"name": "collectWastedToken",
 			"outputs": [],
 			"stateMutability": "nonpayable",
@@ -337,8 +332,21 @@
 			"type": "function"
 		},
 		{
-			"inputs": [],
+			"anonymous": false,
+			"inputs": [
+				{
+					"indexed": false,
+					"internalType": "uint256",
+					"name": "_amount",
+					"type": "uint256"
+				}
+			],
 			"name": "withdraw",
+			"type": "event"
+		},
+		{
+			"inputs": [],
+			"name": "withdrawMoney",
 			"outputs": [],
 			"stateMutability": "nonpayable",
 			"type": "function"
@@ -414,19 +422,6 @@
 		},
 		{
 			"inputs": [],
-			"name": "checkUSDC",
-			"outputs": [
-				{
-					"internalType": "uint256",
-					"name": "",
-					"type": "uint256"
-				}
-			],
-			"stateMutability": "view",
-			"type": "function"
-		},
-		{
-			"inputs": [],
 			"name": "currentStep",
 			"outputs": [
 				{
@@ -485,6 +480,19 @@
 					"internalType": "bool",
 					"name": "",
 					"type": "bool"
+				}
+			],
+			"stateMutability": "view",
+			"type": "function"
+		},
+		{
+			"inputs": [],
+			"name": "subIDOSold",
+			"outputs": [
+				{
+					"internalType": "uint256",
+					"name": "",
+					"type": "uint256"
 				}
 			],
 			"stateMutability": "view",

@@ -1,6 +1,7 @@
 {
 	"address": {
 		"ropsten": "0xA8214e841C620FC2CF965Aa3DB9dBcd97AD7F0A5",
+		"rinkeby": "0x655fa6bDce5E57aCDBC29E5e982aC31FED7DB029",
 		"bsc": "0x68B5A4B58e4c3CA87bbd2dc8A9C5cb7c2C1BDe5E"
 	},
 	"abi": [

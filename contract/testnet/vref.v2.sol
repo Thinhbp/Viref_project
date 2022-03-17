@@ -15,7 +15,7 @@ contract VREF is ERC20 {
     enum statusEnum { ICO, IDO, subIDO }
     statusEnum public state = statusEnum.ICO;
     uint public currentStep = 0;
-    uint subIDOSold = 0;
+    uint public subIDOSold = 0;
     uint[30] icoPrice =[10,20,40,80,160,320,640,1280,2560,5120,10240,20480,40960,81920,163840,327680,655360,1310720,
     2621440,5242880,10485760,20971520,41943040,83886080,167772160,335544320,671088640,1342177280,2684354560,5368709120]; // * 100 already
     uint[30] tokenBeforeICO = [0,353553390593273762200422,603553390593273762200422,780330085889910643300633,905330085889910643300633,
@@ -48,7 +48,7 @@ contract VREF is ERC20 {
         uint currentMoney = _moneyInPool;
         uint moneyLeft = amount;
 
-        while (moneyLeft  >  0) {
+        while (moneyLeft > 0) {
             if (state == statusEnum.ICO) {
                 nextBreak = (tokenBeforeICO[currentStep] + 5 * 10**5 * 10 **18) - _tokenInPool;
                 assumingToken = moneyLeft * 100/icoPrice[currentStep];
