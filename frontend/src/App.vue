@@ -10,8 +10,8 @@
           
         </div>
         <div :style="{display: tab=='contract'?'block':'none'}">
-          <usdc :accounts="accounts" :extra="[vref.address]" />
-          <vref :accounts="accounts" :extra="[vref.address]" />
+          <usdc :accounts="accounts" />
+          <vref :accounts="accounts" />
         </div>
         <div :style="{display: tab=='history'?'block':'none'}">
           <history />
