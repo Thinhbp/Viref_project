@@ -29,7 +29,6 @@ contract VREF is ERC20 {
     event buy(address _address, uint _amount);
     event sell(address _address, uint _amount);
     event changestatus(bool _status);
-    event changeowner(address _address);
     event withdraw(uint _amount);
 
     function buyToken(uint amount, uint expected) public {
@@ -129,15 +128,14 @@ contract VREF is ERC20 {
     }
 
     function changeOwner(address _address) public {
-        require(msg.sender == owner, "permission denied");
         require(_address != address(0), "invalid address");
+        require(msg.sender == owner, "permission denied");
         owner = _address;
-        emit changeowner(_address);
     }
     
     function changeWithdrawAddress(address _address) public {
         require(_address != address(0), "invalid address");
-        require(msg.sender == owner,"permission denied");
+        require(msg.sender == owner, "permission denied");
         withdrawAddress = _address;
     }
 
