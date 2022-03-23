@@ -6,7 +6,8 @@ contract VREF is ERC20 {
     constructor() ERC20("Virtual Referral Network", "VREF") {
     }
 
-    address USDC = 0xd4579eC441f296B3795B16eb3D47A0537E9E44D9;
+    address USDC = 0x8ac76a51cc950d9822d68b83fe1ad97b32cd580d; // 0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48 at ETH
+    uint decimalUSDC = 0; // 0 at BSC and 12 at ETH
     bool public status = true; 
     address owner = msg.sender;
     address withdrawAddress = msg.sender;
@@ -41,7 +42,7 @@ contract VREF is ERC20 {
         uint buyNowCost = 0;
         uint buyNowToken;
 
-        amount = amount * 10**12; // USDC uses 6 decimal places of precision, convert to 18
+        amount = amount * 10**decimalUSDC; // USDC uses 6 decimal places of precision, convert to 18
         uint tokenMint = 0;
         uint tokenTransferForUser = 0;
         uint currentMoney = _moneyInPool;
@@ -113,7 +114,7 @@ contract VREF is ERC20 {
         uint receivedMoney = currentMoney - moneyInpool;
         require(receivedMoney >= expected, "price slippage detected");
         require(transfer(address(this), amount), "transfer VREF failed");
-        require(IERC20(USDC).transfer(msg.sender, receivedMoney/10**12), "transfer USDC failed");
+        require(IERC20(USDC).transfer(msg.sender, receivedMoney/10**decimalUSDC), "transfer USDC failed");
         _moneyInPool -= receivedMoney;
         _tokenInPool += amount;
         if (state == statusEnum.ICO) {
@@ -155,15 +156,15 @@ contract VREF is ERC20 {
     function withdrawMoney() public {
         require(msg.sender == withdrawAddress, "permission denied");
 
-        uint realMoneyInPool = IERC20(USDC).balanceOf(address(this)) * 10**12; // USDC uses 6 decimal places of precision, convert to 18
+        uint realMoneyInPool = IERC20(USDC).balanceOf(address(this)) * 10**decimalUSDC; // USDC uses 6 decimal places of precision, convert to 18
         uint moneyCanWithdraw = _tokenInPool*_moneyInPool/totalSupply() + realMoneyInPool+moneyWithdrawed-_moneyInPool;
         // _tokenInPool*_moneyInPool/totalSupply() : money unused base on AMM algorithm
         // most of time, realMoneyInPool = _moneyInPool-moneyWithdrawed , sometime, someone may send USDC to this address without any further action
 
-        uint withdrawThisTime = (moneyCanWithdraw - moneyWithdrawed) / 10**12;
+        uint withdrawThisTime = (moneyCanWithdraw - moneyWithdrawed) / 10**decimalUSDC;
         require(withdrawThisTime > 0, "no money can withdraw");
         require(IERC20(USDC).transfer(withdrawAddress, withdrawThisTime), "Transfer failed");
-        moneyWithdrawed += withdrawThisTime * 10**12;
+        moneyWithdrawed += withdrawThisTime * 10**decimalUSDC;
         emit withdraw(withdrawThisTime);
     }
 }
