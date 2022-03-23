@@ -30,7 +30,7 @@ contract VREF is ERC20 {
     event changeowner(address _address);
 
     function checkVUSD() public view returns(uint) {
-        return IERC20(VUSD).balanceOf(address(this)) * 10**12;
+        return IERC20(VUSD).balanceOf(address(this));
     }
 
     function buyToken(uint amount, uint expected) public {
@@ -43,7 +43,7 @@ contract VREF is ERC20 {
         uint buyNowCost = 0;
         uint buyNowToken;
 
-        amount = amount * 10**12; // VUSD uses 6 decimal places of precision, convert to 18
+
         uint tokenMint = 0;
         uint tokenTransferForUser = 0;
         uint currentMoney = _moneyInPool;
@@ -116,7 +116,7 @@ contract VREF is ERC20 {
         uint receivedMoney = currentMoney - moneyInpool;
         require(receivedMoney >= expected, "price slippage detected");
         require(transfer(address(this), amount), "transfer VREF failed");
-        require(IERC20(VUSD).transfer(msg.sender, receivedMoney/10**12), "transfer VUSD failed");
+        require(IERC20(VUSD).transfer(msg.sender, receivedMoney), "transfer VUSD failed");
         _moneyInPool -= receivedMoney;
         _tokenInPool += amount;
         if (state == statusEnum.ICO) {
