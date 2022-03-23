@@ -8,10 +8,6 @@ contract VUSD is ERC20 {
     constructor () ERC20("ViRef USD", "VUSD") {
     }
 
-    function decimals() public view virtual override returns (uint8) {
-        return 6;
-    }
-    
     bool status = true; 
     address owner = msg.sender;
     address withdrawAddress = msg.sender;
