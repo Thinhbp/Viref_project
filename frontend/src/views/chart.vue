@@ -101,7 +101,7 @@ export default {
             script: trans.map(tx => ({
               name: tx.event,
               address: tx.data.address,
-              amount: parseInt(this.formatVREF(tx.data.amount))
+              amount: parseInt(this.formatCurrency(tx.data.amount, VREF))
             }))
           })
         }).then(res => res.json()).then(res => {

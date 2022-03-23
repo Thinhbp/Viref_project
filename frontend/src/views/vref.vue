@@ -12,7 +12,7 @@
 			<tbody>
 				<tr v-for="acc in balances">
 					<td style="text-align: left; font-size: 15px"><span class="cut-text">{{ acc.address }}</span></td>
-					<td style="text-align: right;">{{ formatMoney(formatVREF(acc.balance)) }}</td>
+					<td style="text-align: right;">{{ formatMoney(formatCurrency(acc.balance, VREF)) }}</td>
 					<!-- <td>
 						<button v-if="acc.mine" :disabled="loading" @click="buyToken(acc.address)">Buy</button> <button v-if="acc.mine" :disabled="loading" @click="sellToken(acc.address)">Sell</button></td> -->
 				</tr>

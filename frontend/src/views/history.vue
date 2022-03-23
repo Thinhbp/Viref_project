@@ -15,7 +15,7 @@
 						:key="tx.transactionHash" :style="{ cursor: 'pointer', color: selectedTx==idx?'red':'black' }" @click="select(idx)">
 						<td style="text-align: left; font-size: 15px">{{ tx.event }}</td>
 						<td style="text-align: left;"><span class="cut-text">{{ tx.data.address }}</span></td>
-						<td style="text-align: right;">{{ formatMoney(formatVREF(tx.data.amount)) }} {{ tx.event=='buy'?'USD':'VREF' }}</td>
+						<td style="text-align: right;">{{ formatMoney(formatCurrency(tx.data.amount, VREF)) }} {{ tx.event=='buy'?'USD':'VREF' }}</td>
 					</tr>
 				</tbody>
 			</table>

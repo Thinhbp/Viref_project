@@ -95,9 +95,9 @@ export default {
         window.web3 = new Web3(provider);
         this.networkId = await this.getCurrentNetwork();
         this.setChainId(this.networkId);
-        return this.getAccounts().then(accounts => {
+        return this.getAccounts().then(async accounts => {
+          await this.connectContract();
           this.accounts = accounts;
-          this.connectContract();
           ethereum.on("chainChanged", () => {
             window.location.reload();
           });

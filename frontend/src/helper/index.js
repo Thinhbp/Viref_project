@@ -19,8 +19,8 @@ export default {
 		}
 	},
 	methods: {
-		formatVREF(value) {
-	      return window.web3.utils.fromWei(value.toString());
+	    formatCurrency(value, contract) {
+	    	return value/10**contract.decimals;
 	    },
 	    formatMoney(number, decPlaces, decSep, thouSep) {
 		    decPlaces = isNaN(decPlaces = Math.abs(decPlaces)) ? 2 : decPlaces,
@@ -41,17 +41,16 @@ export default {
 
 		    return sign + str + (decimals.length ? (decSep + decimals):"");
 		},
-	    formatUSDC(value) {
-	      return value/10**6;
-	    },
-		contract(name) {
-			return new window.web3.eth.Contract(this[name].abi, this[name].address);
+		async contract(name) {
+			let contract = new window.web3.eth.Contract(this[name].abi, this[name].address);
+			contract.decimals = await contract.methods.decimals().call();
+			return contract
 		},
-		connectContract() {
+		async connectContract() {
 			if ( !window.web3.eth || !this.usdc ) return false;
 	        if ( !window.USDC ) {
-				window.USDC = this.contract('usdc');
-				window.VREF = this.contract('vref');
+				window.USDC = await this.contract('usdc');
+				window.VREF = await this.contract('vref');
 	        }
 		},
 	    async getCurrentNetwork() {
