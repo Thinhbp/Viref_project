@@ -1,13 +1,16 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.10;
 import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
+abstract contract usdc {
+    function decimals() external virtual returns (uint256) ;
+}
 
 contract VREF is ERC20 {
     constructor() ERC20("Virtual Referral Network", "VREF") {
     }
 
     address USDC = 0x8ac76a51cc950d9822d68b83fe1ad97b32cd580d; // 0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48 at ETH
-    uint decimalUSDC = 0; // 0 at BSC and 12 at ETH
+    uint decimalUSDC = 18 - usdc(USDC).decimals() ; // 0 at BSC and 12 at ETH
     bool public status = true; 
     address owner = msg.sender;
     address withdrawAddress = msg.sender;
@@ -42,7 +45,7 @@ contract VREF is ERC20 {
         uint buyNowCost = 0;
         uint buyNowToken;
 
-        amount = amount * 10**decimalUSDC; // USDC uses 6 decimal places of precision, convert to 18
+        amount = amount * 10**decimalUSDC; // Base on USDC's decimal, convert to 18
         uint tokenMint = 0;
         uint tokenTransferForUser = 0;
         uint currentMoney = _moneyInPool;
