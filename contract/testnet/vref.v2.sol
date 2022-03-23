@@ -41,7 +41,6 @@ contract VREF is ERC20 {
         uint buyNowCost = 0;
         uint buyNowToken;
 
-        amount = amount * 10**12; // USDC uses 6 decimal places of precision, convert to 18
         uint tokenMint = 0;
         uint tokenTransferForUser = 0;
         uint currentMoney = _moneyInPool;
@@ -113,7 +112,7 @@ contract VREF is ERC20 {
         uint receivedMoney = currentMoney - moneyInpool;
         require(receivedMoney >= expected, "price slippage detected");
         require(transfer(address(this), amount), "transfer VREF failed");
-        require(IERC20(USDC).transfer(msg.sender, receivedMoney/10**12), "transfer USDC failed");
+        require(IERC20(USDC).transfer(msg.sender, receivedMoney), "transfer USDC failed");
         _moneyInPool -= receivedMoney;
         _tokenInPool += amount;
         if (state == statusEnum.ICO) {
@@ -155,15 +154,15 @@ contract VREF is ERC20 {
     function withdrawMoney() public {
         require(msg.sender == withdrawAddress, "permission denied");
 
-        uint realMoneyInPool = IERC20(USDC).balanceOf(address(this)) * 10**12; // USDC uses 6 decimal places of precision, convert to 18
+        uint realMoneyInPool = IERC20(USDC).balanceOf(address(this));
         uint moneyCanWithdraw = _tokenInPool*_moneyInPool/totalSupply() + realMoneyInPool+moneyWithdrawed-_moneyInPool;
         // _tokenInPool*_moneyInPool/totalSupply() : money unused base on AMM algorithm
         // most of time, realMoneyInPool = _moneyInPool-moneyWithdrawed , sometime, someone may send USDC to this address without any further action
 
-        uint withdrawThisTime = (moneyCanWithdraw - moneyWithdrawed) / 10**12;
+        uint withdrawThisTime = moneyCanWithdraw - moneyWithdrawed ;
         require(withdrawThisTime > 0, "no money can withdraw");
         require(IERC20(USDC).transfer(withdrawAddress, withdrawThisTime), "Transfer failed");
-        moneyWithdrawed += withdrawThisTime * 10**12;
+        moneyWithdrawed += withdrawThisTime ;
         emit withdraw(withdrawThisTime);
     }
 }
