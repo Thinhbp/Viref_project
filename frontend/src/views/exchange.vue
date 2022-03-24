@@ -55,7 +55,7 @@ export default {
 		async setMax() {
 			this.loading = true;
 			let value = await this[this.coins[0].toUpperCase()].methods.balanceOf(this.address).call();
-			value /= 10**(this.coins[0]=='vref'?18:6);
+			value /= 10**(this[this.coins[0].toUpperCase()].decimals);
 			this.loading = false;
 			this.$set(this.values, 0, value);
 		},
@@ -80,14 +80,30 @@ export default {
 			let _moneyInPool = BigInt(await this.VREF.methods._moneyInPool().call());
 			let _tokenInPool = BigInt(await this.VREF.methods._tokenInPool().call());
 			let delta;
+			let method = 'buyToken';
 			if ( this.coins[0]=='vref' ) { // vref to usd
   				delta = pool.sell(_tokenInPool, _moneyInPool, this.values[0]);
+  				method = 'sellToken';
 			} else {
   				let currentStep = parseInt(await this.VREF.methods.currentStep().call());
   				let state = parseInt(await this.VREF.methods.state().call());
   				let subIDOSold = BigInt(await this.VREF.methods.subIDOSold().call());
 				delta = pool.buy(_tokenInPool, _moneyInPool, currentStep, state, subIDOSold, this.values[0]);
+
+				// try {
+				// 	const resGasMethod = await this.VREF.methods[method](
+				// 			"100200000", 
+				// 			"0").estimateGas({ from: this.address });
+				// 	const latestBlock = await web3.eth.getBlock('latest');
+				// 	const blockGas = latestBlock.gasLimit;
+				// 	const finalGas = (blockGas * resGasMethod);
+				// 	const finalGasInEther = web3.utils.fromWei(finalGas.toString(), 'ether');
+				// 	console.log({resGasMethod, blockGas, finalGas, finalGasInEther})
+				// } catch(e) {
+				// 	console.log(e)
+				// }
 			}
+
 			this.loading = false;
 			return this.$set(this.values, 1, delta);
 		}

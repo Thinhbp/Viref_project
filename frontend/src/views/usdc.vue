@@ -35,7 +35,8 @@ export default {
 			let amount = window.prompt("How much USDC do you want ?","1000");
 			if ( !amount ) return;
 			this.loading = true;
-	        this.USDC.methods.mintToken(parseFloat(amount) * 10**6).send({ from }).then(result => {
+			amount = BigInt(parseFloat(amount) * 10**this.USDC.decimals).toString()
+	        this.USDC.methods.mintToken(amount).send({ from }).then(result => {
 	        	let status = result.status;
 	        	if ( status ) this.getBalances();
 	        }).finally(e => {

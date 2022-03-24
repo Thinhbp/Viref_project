@@ -43,7 +43,7 @@ export default {
 	    async getLogsEvent(event) {
 	    	let currentBlock = await web3.eth.getBlockNumber()
 	    	return this.VREF.getPastEvents(event, {
-			    fromBlock: 0, // currentBlock-5000,
+			    fromBlock: currentBlock-4999, // currentBlock-5000,
 			    toBlock: 'latest'
 			})
 		    .then(results => {

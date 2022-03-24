@@ -40,7 +40,7 @@ export default {
 			let amount = window.prompt("How much USDC do you want to pay to buy VREF ?", values[0]?values[0]:10);
 			if ( !amount ) return;
 			this.loading = true;
-			amount = parseFloat(amount) * 10**6;
+			amount = BigInt(parseFloat(amount) * 10**this.USDC.decimals).toString();
 			let approved = await this.USDC.methods.allowance(from, this.vref.address).call({ from });
 			if ( !approved || parseFloat(approved)<amount ) {
 				let approve = await this.USDC.methods.approve(this.vref.address, amount).send({ from });
@@ -63,7 +63,7 @@ export default {
 			let amount = window.prompt("How much VREF do you want to sell ?", values[0]?values[0]:10);
 			if ( !amount ) return;
 			this.loading = true;
-			amount = BigInt(parseFloat(amount) * 10**18).toString();
+			amount = BigInt(parseFloat(amount) * 10**this.VREF.decimals).toString();
 			let approved = await this.VREF.methods.allowance(from, this.vref.address).call({ from });
 			if ( !approved || parseFloat(approved)<amount ) {
 				let approve = await this.VREF.methods.approve(this.vref.address, amount).send({ from });
