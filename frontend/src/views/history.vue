@@ -25,6 +25,8 @@
 <script type="text/javascript">
 import helper from "../helper";
 import { mapMutations, mapGetters } from 'vuex';
+import Moralis from 'moralis/dist/moralis.min.js';
+import vref from "../contract/vref.json";
 
 export default {
 	data() {
@@ -33,7 +35,7 @@ export default {
 		}
 	},
 	computed: {
-		...mapGetters([ 'selectedTx' ])
+		...mapGetters([ 'selectedTx', 'chainName' ])
 	},
 	methods: {
 		...mapMutations([ 'setHistory', 'setSelectedTx' ]),
@@ -43,7 +45,7 @@ export default {
 	    async getLogsEvent(event) {
 	    	let currentBlock = await web3.eth.getBlockNumber()
 	    	return this.VREF.getPastEvents(event, {
-			    fromBlock: currentBlock-4999, // currentBlock-5000,
+			    fromBlock: currentBlock-4990, // currentBlock-5000,
 			    toBlock: 'latest'
 			})
 		    .then(results => {
@@ -99,10 +101,35 @@ export default {
 			//     })
 			//   });
 			// }).catch(err => console.log("getPastLogs failed", err));
-	    }
+	    },
+	    async getEvents(server) {
+		  Moralis.start(server)
+		  const params = {
+		    limit: 0,
+		    offset: 0,
+		  };
+		  return Moralis.Cloud.run('getBuyEvents', params).then(txs => {
+				this.transactions = txs.result.map(tx => ({
+					transactionHash: tx.transaction_hash,
+					event: "buy",
+					data: tx.data
+				}));
+				this.setHistory(this.transactions);
+				return true;
+	    	});
+		}
 	},
 	mounted() {
-		this.getLogs();
+
+		// let input = '0x057466ea0000000000000000000000000000000000000000000000056e8de91e1e240000000000000000000000000000000000000000000000000036518b1b2d2d680000';
+		// let buyTokenPrefix = web3.eth.abi.encodeFunctionSignature('buyToken(uint256,uint256)');
+		// let sellTokenPrefix = web3.eth.abi.encodeFunctionSignature('sellToken(uint256,uint256)');
+		// console.log({ buyTokenPrefix, sellTokenPrefix })
+		// let inputs = web3.eth.abi.decodeParameters(['uint256', 'uint256'], input.replace(buyTokenPrefix, ''))
+		// console.log(inputs);
+		
+		if ( vref.moralis[this.chainName] )
+			this.getEvents(vref.moralis[this.chainName]);
 	},
 	mixins: [helper]
 }

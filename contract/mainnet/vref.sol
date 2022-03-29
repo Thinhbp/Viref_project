@@ -29,6 +29,7 @@ contract VREF is ERC20 {
     1205927965970545036584047,1206273232953546280492445,1206517373578546280492445,1206690007070046902446645,1206812077382546902446645,
     1206898394128297213423745,1206959429284547213423745,1207002587657422368912294,1207033105235547368912294,1207054684421984946656569];
     uint moneyWithdrawed = 0;
+    uint poolConstant = 0;
     
     event buy(address _address, uint _amount);
     event sell(address _address, uint _amount);
@@ -61,7 +62,7 @@ contract VREF is ERC20 {
                 } else {
                     nextBreak = state == statusEnum.subIDO ? subIDOSold : (_tokenInPool - tokenBeforeICO[currentStep + 1]);
                 }
-                assumingToken = _tokenInPool - (_tokenInPool * _moneyInPool / (_moneyInPool + moneyLeft));
+                assumingToken = _tokenInPool - (poolConstant / (_moneyInPool + moneyLeft));
             }
 
             buyNowToken = nextBreak<assumingToken ? nextBreak : assumingToken;
@@ -70,7 +71,7 @@ contract VREF is ERC20 {
             if (assumingToken>nextBreak) {
                 buyNowCost = state == statusEnum.ICO ?
                                     buyNowToken * icoPrice[currentStep]/100 :
-                                    ((_tokenInPool * _moneyInPool)/(_tokenInPool - buyNowToken) - _moneyInPool);
+                                    (poolConstant/(_tokenInPool - buyNowToken) - _moneyInPool);
             }
             _moneyInPool += buyNowCost;
 
@@ -85,6 +86,7 @@ contract VREF is ERC20 {
             if (assumingToken>=nextBreak) {
                 if (state == statusEnum.ICO) {
                     state = statusEnum.IDO;
+                    poolConstant = _tokenInPool * _moneyInPool;
                 } else {
                     if (state == statusEnum.IDO) {
                         currentStep += 1;
@@ -112,8 +114,11 @@ contract VREF is ERC20 {
     function sellToken(uint amount, uint expected) public {
         require(status, "Contract is maintaining");
         require(amount > 0, "invalid amount");
+        if (state == statusEnum.ICO) {
+            poolConstant = _tokenInPool * _moneyInPool;
+        }
         uint currentMoney = _moneyInPool;
-        uint moneyInpool = (_tokenInPool * _moneyInPool) / (_tokenInPool + amount);
+        uint moneyInpool = poolConstant / (_tokenInPool + amount);
         uint receivedMoney = currentMoney - moneyInpool;
         require(receivedMoney >= expected, "price slippage detected");
         require(transfer(address(this), amount), "transfer VREF failed");

@@ -1,8 +1,8 @@
 import Vue from 'vue';
 import Vuex from 'vuex';
-const usdc = require("../contract/usdc.json");
-const vref = require("../contract/vref.json");
-import { chains } from '../constants/constantNetwork';
+import usdc from "../contract/usdc.json";
+import vref from "../contract/vref.json";
+import chains from '../constants/constantNetwork';
 const contracts = { usdc, vref };
 
 Vue.use(Vuex)
@@ -51,6 +51,8 @@ export default new Vuex.Store({
     },
     history: state => state.history,
     selectedTx: state => state.selectedTx,
-    supportedNetworks: state => state.supportedNetworks
+    supportedNetworks: state => state.supportedNetworks,
+    chainId: state => state.chainId,
+    chainName: state => Object.keys(chains).find(name => chains[name].id==state.chainId)
   }
 })

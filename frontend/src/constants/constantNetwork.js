@@ -1,5 +1,5 @@
 
-export const chains = {
+export default {
   "ethereum": {
     id: 1,
     name: "Ethereum Main Network"

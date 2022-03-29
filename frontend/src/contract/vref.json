@@ -5,6 +5,16 @@
 		"bsc": "0xe2b2Fe5cf0C8EbdBDFD3b89F37e6Fb1b8834bF4B",
 		"bsctest": "0xDECDb6429627d5f6dA7de4A5fA03bc27b6681361"
 	},
+	"moralis": {
+		"bsc": {
+			"serverUrl": "https://qgeh9hmjvtyr.usemoralis.com:2053/server",
+			"appId": "0pu2R2muyfVlrpWQaniDCWNMJSLCzPLHsgByV9pX"
+		},
+		"bsctest": {
+			"serverUrl": "https://an4zp46jspiq.usemoralis.com:2053/server",
+			"appId": "RNjXQtV8zeVSbp45dWeuCNT4HgUYs0SgkpoNSpPB"
+		}
+	},
 	"abi": [
 		{
 			"inputs": [],

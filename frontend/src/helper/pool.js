@@ -19,7 +19,7 @@ export default {
         let buyNowCost;
         let buyNowToken;
 
-        amount = BigInt(amount * 10**18); // USDC uses 6 decimal places of precision, convert to 18
+        amount = BigInt(amount * 10**18);
         let tokenMint = BigInt(0);
         let tokenTransferForUser = BigInt(0);
         let currentMoney = _moneyInPool;
